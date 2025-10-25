@@ -121,7 +121,7 @@ const Index = () => {
               </TabsTrigger>
               <TabsTrigger value="examples" className="flex items-center gap-2">
                 <Utensils className="h-4 w-4" />
-                Examples
+                Meals
               </TabsTrigger>
               <TabsTrigger value="history" className="flex items-center gap-2">
                 <Calendar className="h-4 w-4" />

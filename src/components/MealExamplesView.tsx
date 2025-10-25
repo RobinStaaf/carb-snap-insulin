@@ -71,18 +71,6 @@ const mealCategories: MealCategory[] = [
     ],
   },
   {
-    title: "Supper",
-    icon: Moon,
-    meals: [
-      { name: "Spaghetti with meatballs", carbs: 55, description: "1 cup pasta with 3 meatballs", image: spaghettiImg },
-      { name: "Chicken with rice", carbs: 45, description: "4 oz chicken with 3/4 cup rice", image: chickenRiceImg },
-      { name: "Tacos", carbs: 40, description: "2 soft tacos with meat and toppings", image: tacosImg },
-      { name: "Fish sticks meal", carbs: 38, description: "5 fish sticks with mashed potatoes", image: fishSticksImg },
-      { name: "Hamburger with bun", carbs: 35, description: "1 burger with bun and small side", image: hamburgerImg },
-      { name: "Chicken quesadilla", carbs: 42, description: "1 quesadilla with cheese and chicken", image: quesadillaImg },
-    ],
-  },
-  {
     title: "Dinner",
     icon: UtensilsCrossed,
     meals: [
@@ -92,6 +80,18 @@ const mealCategories: MealCategory[] = [
       { name: "Baked salmon dinner", carbs: 42, description: "Salmon fillet with broccoli and rice", image: salmonImg },
       { name: "Chicken parmesan", carbs: 55, description: "Breaded chicken with melted cheese over spaghetti", image: chickenParmImg },
       { name: "Pork chop dinner", carbs: 38, description: "Grilled pork chop with applesauce and corn", image: porkChopImg },
+    ],
+  },
+  {
+    title: "Supper",
+    icon: Moon,
+    meals: [
+      { name: "Spaghetti with meatballs", carbs: 55, description: "1 cup pasta with 3 meatballs", image: spaghettiImg },
+      { name: "Chicken with rice", carbs: 45, description: "4 oz chicken with 3/4 cup rice", image: chickenRiceImg },
+      { name: "Tacos", carbs: 40, description: "2 soft tacos with meat and toppings", image: tacosImg },
+      { name: "Fish sticks meal", carbs: 38, description: "5 fish sticks with mashed potatoes", image: fishSticksImg },
+      { name: "Hamburger with bun", carbs: 35, description: "1 burger with bun and small side", image: hamburgerImg },
+      { name: "Chicken quesadilla", carbs: 42, description: "1 quesadilla with cheese and chicken", image: quesadillaImg },
     ],
   },
 ];
