@@ -8,6 +8,7 @@ import ResultsDisplay from "@/components/ResultsDisplay";
 import DailyHistoryView from "@/components/DailyHistoryView";
 import MealExamplesView from "@/components/MealExamplesView";
 import SettingsView from "@/components/SettingsView";
+import photoExampleImg from "@/assets/photo-meal-example.jpg";
 
 export interface CalculationResult {
   id: string;
@@ -135,10 +136,18 @@ const Index = () => {
 
             <TabsContent value="capture" className="space-y-8">
               {/* Main Action Button */}
-              <div>
+              <div className="relative">
+                <div className="relative overflow-hidden rounded-2xl shadow-card">
+                  <img
+                    src={photoExampleImg}
+                    alt="Take a photo of your meal"
+                    className="w-full h-48 object-cover opacity-40"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-background/90 via-background/50 to-transparent" />
+                </div>
                 <Button
                   onClick={() => setShowCamera(true)}
-                  className="w-full h-32 text-2xl bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 shadow-card"
+                  className="absolute inset-0 w-full h-full text-2xl bg-gradient-to-r from-primary/80 to-primary/60 hover:from-primary/90 hover:to-primary/70 backdrop-blur-sm"
                   size="lg"
                 >
                   <Camera className="mr-3 h-12 w-12" />
