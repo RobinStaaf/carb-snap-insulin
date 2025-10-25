@@ -3,11 +3,12 @@ import { Camera, Calendar, Utensils, Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
-import CameraCapture from "@/components/CameraCapture";
-import ResultsDisplay from "@/components/ResultsDisplay";
-import DailyHistoryView from "@/components/DailyHistoryView";
-import MealExamplesView from "@/components/MealExamplesView";
-import SettingsView from "@/components/SettingsView";
+import { useLanguage } from "@/contexts/LanguageContext";
+import CameraCapture from "@/components/CameraCaptureTranslated";
+import ResultsDisplay from "@/components/ResultsDisplayTranslated";
+import DailyHistoryView from "@/components/DailyHistoryViewTranslated";
+import MealExamplesView from "@/components/MealExamplesViewTranslated";
+import SettingsView from "@/components/SettingsViewTranslated";
 import StartPage from "@/pages/StartPage";
 import photoExampleImg from "@/assets/photo-meal-example.jpg";
 
@@ -22,6 +23,7 @@ export interface CalculationResult {
 
 const Index = () => {
   const { toast } = useToast();
+  const { t } = useLanguage();
   const [showStartPage, setShowStartPage] = useState(true);
   const [showCamera, setShowCamera] = useState(false);
   const [currentResult, setCurrentResult] = useState<CalculationResult | null>(null);
@@ -36,8 +38,8 @@ const Index = () => {
   const handlePhotoCapture = async (imageDataUrl: string) => {
     try {
       toast({
-        title: "Analyzing...",
-        description: "AI is examining your food photo",
+        title: t("app.analyzing"),
+        description: t("app.analyzingDesc"),
       });
 
       const response = await fetch(
@@ -74,13 +76,13 @@ const Index = () => {
       setShowCamera(false);
       
       toast({
-        title: "Analysis Complete!",
-        description: `Estimated ${carbsEstimate}g carbs, ${insulinDose} units insulin needed`,
+        title: t("app.analysisComplete"),
+        description: t("app.analysisCompleteDesc", { carbs: carbsEstimate, insulin: insulinDose }),
       });
     } catch (error) {
       toast({
-        title: "Error",
-        description: "Failed to analyze image. Please try again.",
+        title: t("app.error"),
+        description: t("app.errorDesc"),
         variant: "destructive",
       });
     }
@@ -92,10 +94,10 @@ const Index = () => {
         {/* Header */}
         <div className="text-center mb-8">
           <h1 className="text-4xl font-bold text-foreground mb-2">
-            CarbSmart
+            {t("app.title")}
           </h1>
           <p className="text-muted-foreground text-lg">
-            Take a photo, know your carbs!
+            {t("app.subtitle")}
           </p>
         </div>
 
@@ -125,19 +127,19 @@ const Index = () => {
             <TabsList className="grid w-full grid-cols-4 mb-8">
               <TabsTrigger value="capture" className="flex items-center gap-2">
                 <Camera className="h-4 w-4" />
-                Capture
+                {t("tabs.capture")}
               </TabsTrigger>
               <TabsTrigger value="examples" className="flex items-center gap-2">
                 <Utensils className="h-4 w-4" />
-                Meals
+                {t("tabs.meals")}
               </TabsTrigger>
               <TabsTrigger value="history" className="flex items-center gap-2">
                 <Calendar className="h-4 w-4" />
-                History
+                {t("tabs.history")}
               </TabsTrigger>
               <TabsTrigger value="settings" className="flex items-center gap-2">
                 <Settings className="h-4 w-4" />
-                Settings
+                {t("tabs.settings")}
               </TabsTrigger>
             </TabsList>
 
@@ -159,7 +161,7 @@ const Index = () => {
                   size="lg"
                 >
                   <Camera className="mr-3 h-10 w-10" />
-                  Take Photo
+                  {t("camera.takePhoto")}
                 </Button>
               </div>
             </TabsContent>
