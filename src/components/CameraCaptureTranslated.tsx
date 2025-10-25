@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/contexts/LanguageContext";
+import photoMealIllustration from "@/assets/photo-meal-illustration.png";
 
 interface CameraCaptureProps {
   onCapture: (imageDataUrl: string) => void;
@@ -56,8 +57,12 @@ const CameraCapture = ({ onCapture, onCancel }: CameraCaptureProps) => {
 
         {!preview ? (
           <div className="space-y-4">
-            <div className="aspect-square bg-muted rounded-2xl flex items-center justify-center border-2 border-dashed border-border">
-              <Camera className="h-24 w-24 text-muted-foreground" />
+            <div className="aspect-square bg-muted rounded-2xl flex items-center justify-center overflow-hidden">
+              <img 
+                src={photoMealIllustration} 
+                alt="Take photo of food" 
+                className="w-full h-full object-cover"
+              />
             </div>
             <Button
               onClick={handleTakePhoto}
