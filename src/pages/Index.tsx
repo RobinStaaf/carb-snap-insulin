@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Camera, Calendar, Utensils, Settings, Info, LogOut } from "lucide-react";
+import { Camera, Calendar, Utensils, Settings, Info, LogOut, Shield } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import type { User } from "@supabase/supabase-js";
 import { Button } from "@/components/ui/button";
@@ -37,6 +37,7 @@ const Index = () => {
   const [history, setHistory] = useState<CalculationResult[]>([]);
   const [insulinRatio, setInsulinRatio] = useState(10); // Default 1:10 ratio
   const [comments, setComments] = useState("");
+  const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
     // Set up auth state listener
@@ -44,6 +45,10 @@ const Index = () => {
       (_event, session) => {
         setUser(session?.user ?? null);
         setIsLoading(false);
+        
+        if (session?.user) {
+          checkAdminStatus(session.user.id);
+        }
       }
     );
 
@@ -51,6 +56,10 @@ const Index = () => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user ?? null);
       setIsLoading(false);
+      
+      if (session?.user) {
+        checkAdminStatus(session.user.id);
+      }
     });
 
     return () => subscription.unsubscribe();
@@ -61,6 +70,21 @@ const Index = () => {
       navigate("/auth");
     }
   }, [user, isLoading, navigate]);
+
+  const checkAdminStatus = async (userId: string) => {
+    try {
+      const { data } = await supabase
+        .from("user_roles")
+        .select("role")
+        .eq("user_id", userId)
+        .eq("role", "admin")
+        .single();
+
+      setIsAdmin(!!data);
+    } catch (error) {
+      setIsAdmin(false);
+    }
+  };
 
   const handleSignOut = async () => {
     await supabase.auth.signOut();
@@ -141,7 +165,17 @@ const Index = () => {
                 {t("app.subtitle")}
               </p>
             </div>
-            <div className="flex-1 flex justify-end">
+            <div className="flex-1 flex justify-end gap-2">
+              {isAdmin && (
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => navigate("/admin")}
+                  title="Admin Dashboard"
+                >
+                  <Shield className="h-5 w-5" />
+                </Button>
+              )}
               <Button
                 variant="ghost"
                 size="icon"
