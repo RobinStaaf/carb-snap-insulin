@@ -73,6 +73,43 @@ const Auth = () => {
     }
   };
 
+  const handleAdminSignIn = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+
+    try {
+      const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+      if (authError) throw authError;
+
+      // Check if user has admin role
+      const { data: roleData, error: roleError } = await supabase
+        .from("user_roles")
+        .select("role")
+        .eq("user_id", authData.user.id)
+        .eq("role", "admin")
+        .single();
+
+      if (roleError || !roleData) {
+        await supabase.auth.signOut();
+        throw new Error(t("auth.notAdmin"));
+      }
+
+      navigate("/admin");
+    } catch (error: any) {
+      toast({
+        title: t("app.error"),
+        description: error.message,
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-secondary/30 flex items-center justify-center p-4 relative">
       <div className="absolute top-4 right-4">
@@ -111,9 +148,10 @@ const Auth = () => {
         </CardHeader>
         <CardContent>
           <Tabs defaultValue="signin" className="w-full">
-            <TabsList className="grid w-full grid-cols-2">
+            <TabsList className="grid w-full grid-cols-3">
               <TabsTrigger value="signin">{t("auth.signIn")}</TabsTrigger>
               <TabsTrigger value="signup">{t("auth.signUp")}</TabsTrigger>
+              <TabsTrigger value="admin">{t("auth.admin")}</TabsTrigger>
             </TabsList>
             
             <TabsContent value="signin">
@@ -165,6 +203,32 @@ const Auth = () => {
                 </div>
                 <Button type="submit" className="w-full" disabled={isLoading}>
                   {isLoading ? t("auth.loading") : t("auth.signUp")}
+                </Button>
+              </form>
+            </TabsContent>
+            
+            <TabsContent value="admin">
+              <form onSubmit={handleAdminSignIn} className="space-y-4">
+                <div className="space-y-2">
+                  <Input
+                    type="email"
+                    placeholder={t("auth.email")}
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Input
+                    type="password"
+                    placeholder={t("auth.password")}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                  />
+                </div>
+                <Button type="submit" className="w-full" disabled={isLoading}>
+                  {isLoading ? t("auth.loading") : t("auth.adminSignIn")}
                 </Button>
               </form>
             </TabsContent>
