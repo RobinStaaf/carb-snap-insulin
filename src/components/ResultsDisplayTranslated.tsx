@@ -3,7 +3,6 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { CalculationResult } from "@/pages/Index";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { useEffect } from "react";
 
 interface ResultsDisplayProps {
   results: CalculationResult[];
@@ -17,15 +16,6 @@ const ResultsDisplay = ({ results, onMore, onDone, onClose }: ResultsDisplayProp
   
   const totalCarbs = results.reduce((sum, r) => sum + r.carbsEstimate, 0);
   const totalInsulin = results.reduce((sum, r) => sum + r.insulinDose, 0);
-  
-  // Auto-return to main page after 5 seconds
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      onDone();
-    }, 5000);
-
-    return () => clearTimeout(timer);
-  }, [onDone]);
   
   return (
     <div className="fixed inset-0 bg-background z-50 overflow-y-auto">
