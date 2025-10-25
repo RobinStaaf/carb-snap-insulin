@@ -9,7 +9,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { Shield, UserPlus, ArrowLeft, Trash2 } from "lucide-react";
+import { Shield, UserPlus, ArrowLeft, Trash2, Check, X } from "lucide-react";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 
 interface Profile {
@@ -17,6 +17,7 @@ interface Profile {
   email: string;
   full_name: string | null;
   created_at: string;
+  status: 'pending' | 'approved' | 'declined';
 }
 
 interface UserRole {
@@ -194,6 +195,52 @@ const Admin = () => {
     return adminRole ? 'admin' : 'user';
   };
 
+  const handleApproveUser = async (userId: string) => {
+    try {
+      const { error } = await supabase
+        .from("profiles")
+        .update({ status: 'approved' })
+        .eq("id", userId);
+
+      if (error) throw error;
+      
+      toast({ 
+        title: t("admin.userApproved"),
+        description: t("admin.userCanLogin")
+      });
+      loadUsers();
+    } catch (error: any) {
+      toast({
+        title: t("app.error"),
+        description: error.message || "Failed to approve user",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleDeclineUser = async (userId: string) => {
+    try {
+      const { error } = await supabase
+        .from("profiles")
+        .update({ status: 'declined' })
+        .eq("id", userId);
+
+      if (error) throw error;
+      
+      toast({ 
+        title: t("admin.userDeclined"),
+        description: t("admin.userDenied")
+      });
+      loadUsers();
+    } catch (error: any) {
+      toast({
+        title: t("app.error"),
+        description: error.message || "Failed to decline user",
+        variant: "destructive",
+      });
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -281,6 +328,7 @@ const Admin = () => {
                 <TableRow>
                   <TableHead>{t("admin.email")}</TableHead>
                   <TableHead>{t("admin.name")}</TableHead>
+                  <TableHead>{t("admin.status")}</TableHead>
                   <TableHead>{t("admin.role")}</TableHead>
                   <TableHead>{t("admin.created")}</TableHead>
                   <TableHead className="text-right">{t("admin.actions")}</TableHead>
@@ -294,6 +342,17 @@ const Admin = () => {
                       <TableCell className="font-medium">{user.email}</TableCell>
                       <TableCell>{user.full_name || "-"}</TableCell>
                       <TableCell>
+                        <Badge 
+                          variant={
+                            user.status === 'approved' ? 'default' : 
+                            user.status === 'pending' ? 'secondary' : 
+                            'destructive'
+                          }
+                        >
+                          {user.status}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>
                         <Badge variant={role === 'admin' ? 'default' : 'secondary'}>
                           {role}
                         </Badge>
@@ -302,13 +361,35 @@ const Admin = () => {
                         {new Date(user.created_at).toLocaleDateString()}
                       </TableCell>
                       <TableCell className="text-right space-x-2">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => handleToggleAdmin(user.id, role === 'admin')}
-                        >
-                          {role === 'admin' ? t("admin.removeAdmin") : t("admin.makeAdmin")}
-                        </Button>
+                        {user.status === 'pending' && (
+                          <>
+                            <Button
+                              variant="default"
+                              size="sm"
+                              onClick={() => handleApproveUser(user.id)}
+                            >
+                              <Check className="h-4 w-4 mr-1" />
+                              {t("admin.approve")}
+                            </Button>
+                            <Button
+                              variant="destructive"
+                              size="sm"
+                              onClick={() => handleDeclineUser(user.id)}
+                            >
+                              <X className="h-4 w-4 mr-1" />
+                              {t("admin.decline")}
+                            </Button>
+                          </>
+                        )}
+                        {user.status === 'approved' && (
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleToggleAdmin(user.id, role === 'admin')}
+                          >
+                            {role === 'admin' ? t("admin.removeAdmin") : t("admin.makeAdmin")}
+                          </Button>
+                        )}
                         <Button
                           variant="destructive"
                           size="sm"

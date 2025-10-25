@@ -62,6 +62,11 @@ const translations: Record<Language, Record<string, string>> = {
     "auth.checkEmail": "Check your email for a password reset link",
     "auth.sending": "Sending...",
     "auth.cancel": "Cancel",
+    "auth.accountPending": "Account Pending Approval",
+    "auth.accountPendingDesc": "Your account is waiting for guardian approval",
+    "auth.accountDeclined": "Account Declined",
+    "auth.accountDeclinedDesc": "Your account has been declined by a guardian",
+    "auth.profileError": "Could not verify account status",
     
     // Camera
     "camera.title": "Capture Food",
@@ -217,6 +222,13 @@ const translations: Record<Language, Record<string, string>> = {
     "admin.accessDenied": "Access Denied",
     "admin.noPermissions": "You don't have guardian permissions",
     "admin.loading": "Loading...",
+    "admin.status": "Status",
+    "admin.approve": "Approve",
+    "admin.decline": "Decline",
+    "admin.userApproved": "User Approved",
+    "admin.userCanLogin": "User can now log in to the app",
+    "admin.userDeclined": "User Declined",
+    "admin.userDenied": "User access has been denied",
     
     // NotFound
     "notFound.title": "404",
@@ -274,6 +286,11 @@ const translations: Record<Language, Record<string, string>> = {
     "auth.checkEmail": "Kontrollera din e-post för länk till lösenordsåterställning",
     "auth.sending": "Skickar...",
     "auth.cancel": "Avbryt",
+    "auth.accountPending": "Konto väntar på godkännande",
+    "auth.accountPendingDesc": "Ditt konto väntar på godkännande från vårdnadshavare",
+    "auth.accountDeclined": "Konto nekat",
+    "auth.accountDeclinedDesc": "Ditt konto har nekats av en vårdnadshavare",
+    "auth.profileError": "Kunde inte verifiera kontostatus",
     
     // Camera
     "camera.title": "Fånga mat",
@@ -429,6 +446,13 @@ const translations: Record<Language, Record<string, string>> = {
     "admin.accessDenied": "Åtkomst nekad",
     "admin.noPermissions": "Du har inte vårdnadshavarbehörigheter",
     "admin.loading": "Laddar...",
+    "admin.status": "Status",
+    "admin.approve": "Godkänn",
+    "admin.decline": "Neka",
+    "admin.userApproved": "Användare godkänd",
+    "admin.userCanLogin": "Användaren kan nu logga in i appen",
+    "admin.userDeclined": "Användare nekad",
+    "admin.userDenied": "Användaråtkomst har nekats",
     
     // NotFound
     "notFound.title": "404",
@@ -486,6 +510,11 @@ const translations: Record<Language, Record<string, string>> = {
     "auth.checkEmail": "Vérifiez votre email pour le lien de réinitialisation du mot de passe",
     "auth.sending": "Envoi...",
     "auth.cancel": "Annuler",
+    "auth.accountPending": "Compte en attente d'approbation",
+    "auth.accountPendingDesc": "Votre compte attend l'approbation du tuteur",
+    "auth.accountDeclined": "Compte refusé",
+    "auth.accountDeclinedDesc": "Votre compte a été refusé par un tuteur",
+    "auth.profileError": "Impossible de vérifier le statut du compte",
     
     // Camera
     "camera.title": "Capturer la nourriture",
@@ -641,6 +670,13 @@ const translations: Record<Language, Record<string, string>> = {
     "admin.accessDenied": "Accès refusé",
     "admin.noPermissions": "Vous n'avez pas les permissions de tuteur",
     "admin.loading": "Chargement...",
+    "admin.status": "Statut",
+    "admin.approve": "Approuver",
+    "admin.decline": "Refuser",
+    "admin.userApproved": "Utilisateur approuvé",
+    "admin.userCanLogin": "L'utilisateur peut maintenant se connecter à l'application",
+    "admin.userDeclined": "Utilisateur refusé",
+    "admin.userDenied": "L'accès utilisateur a été refusé",
     
     // NotFound
     "notFound.title": "404",
@@ -698,6 +734,11 @@ const translations: Record<Language, Record<string, string>> = {
     "auth.checkEmail": "Revisa tu correo para el enlace de restablecimiento de contraseña",
     "auth.sending": "Enviando...",
     "auth.cancel": "Cancelar",
+    "auth.accountPending": "Cuenta pendiente de aprobación",
+    "auth.accountPendingDesc": "Tu cuenta está esperando la aprobación del tutor",
+    "auth.accountDeclined": "Cuenta rechazada",
+    "auth.accountDeclinedDesc": "Tu cuenta ha sido rechazada por un tutor",
+    "auth.profileError": "No se pudo verificar el estado de la cuenta",
     
     // Camera
     "camera.title": "Capturar comida",
@@ -853,6 +894,13 @@ const translations: Record<Language, Record<string, string>> = {
     "admin.accessDenied": "Acceso denegado",
     "admin.noPermissions": "No tienes permisos de tutor",
     "admin.loading": "Cargando...",
+    "admin.status": "Estado",
+    "admin.approve": "Aprobar",
+    "admin.decline": "Rechazar",
+    "admin.userApproved": "Usuario aprobado",
+    "admin.userCanLogin": "El usuario ahora puede iniciar sesión en la aplicación",
+    "admin.userDeclined": "Usuario rechazado",
+    "admin.userDenied": "El acceso del usuario ha sido denegado",
     
     // NotFound
     "notFound.title": "404",

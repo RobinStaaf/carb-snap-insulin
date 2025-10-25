@@ -56,12 +56,49 @@ const Auth = () => {
     setIsLoading(true);
 
     try {
-      const { error } = await supabase.auth.signInWithPassword({
+      const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
 
       if (error) throw error;
+
+      // Check user status
+      const { data: profileData, error: profileError } = await supabase
+        .from("profiles")
+        .select("status")
+        .eq("id", data.user.id)
+        .single();
+
+      if (profileError || !profileData) {
+        await supabase.auth.signOut();
+        toast({
+          title: t("app.error"),
+          description: t("auth.profileError"),
+          variant: "destructive",
+        });
+        return;
+      }
+
+      if (profileData.status === 'pending') {
+        await supabase.auth.signOut();
+        toast({
+          title: t("auth.accountPending"),
+          description: t("auth.accountPendingDesc"),
+          variant: "destructive",
+        });
+        return;
+      }
+
+      if (profileData.status === 'declined') {
+        await supabase.auth.signOut();
+        toast({
+          title: t("auth.accountDeclined"),
+          description: t("auth.accountDeclinedDesc"),
+          variant: "destructive",
+        });
+        return;
+      }
 
       navigate("/");
     } catch (error: any) {
