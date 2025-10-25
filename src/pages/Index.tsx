@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Camera, Calendar } from "lucide-react";
+import { Camera, Calendar, Utensils } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
@@ -7,6 +7,7 @@ import CameraCapture from "@/components/CameraCapture";
 import ResultsDisplay from "@/components/ResultsDisplay";
 import SettingsPanel from "@/components/SettingsPanel";
 import DailyHistoryView from "@/components/DailyHistoryView";
+import MealExamplesView from "@/components/MealExamplesView";
 
 export interface CalculationResult {
   id: string;
@@ -113,10 +114,14 @@ const Index = () => {
         {/* Main Tabs */}
         {!showCamera && !currentResult && (
           <Tabs defaultValue="capture" className="w-full">
-            <TabsList className="grid w-full grid-cols-2 mb-8">
+            <TabsList className="grid w-full grid-cols-3 mb-8">
               <TabsTrigger value="capture" className="flex items-center gap-2">
                 <Camera className="h-4 w-4" />
                 Capture
+              </TabsTrigger>
+              <TabsTrigger value="examples" className="flex items-center gap-2">
+                <Utensils className="h-4 w-4" />
+                Examples
               </TabsTrigger>
               <TabsTrigger value="history" className="flex items-center gap-2">
                 <Calendar className="h-4 w-4" />
@@ -142,6 +147,10 @@ const Index = () => {
                 insulinRatio={insulinRatio}
                 onRatioChange={setInsulinRatio}
               />
+            </TabsContent>
+
+            <TabsContent value="examples">
+              <MealExamplesView insulinRatio={insulinRatio} />
             </TabsContent>
 
             <TabsContent value="history">
