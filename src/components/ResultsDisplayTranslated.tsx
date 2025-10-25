@@ -111,7 +111,7 @@ const ResultsDisplay = ({ results, onMore, onDone, onClose }: ResultsDisplayProp
             size="lg"
           >
             <X className="mr-2 h-6 w-6" />
-            {t("results.cancel")}
+            {t("results.abort")}
           </Button>
         </div>
       </div>
