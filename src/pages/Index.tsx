@@ -1,7 +1,8 @@
 import { useState } from "react";
-import { Camera, Calendar, Utensils, Settings } from "lucide-react";
+import { Camera, Calendar, Utensils, Settings, Info } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/contexts/LanguageContext";
 import CameraCapture from "@/components/CameraCaptureTranslated";
@@ -128,7 +129,7 @@ const Index = () => {
         {/* Main Tabs */}
         {!showCamera && currentResults.length === 0 && (
           <Tabs defaultValue="capture" className="w-full">
-            <TabsList className="grid w-full grid-cols-4 mb-8">
+            <TabsList className="grid w-full grid-cols-5 mb-8">
               <TabsTrigger value="capture" className="flex items-center gap-2">
                 <Camera className="h-4 w-4" />
                 {t("tabs.capture")}
@@ -140,6 +141,10 @@ const Index = () => {
               <TabsTrigger value="history" className="flex items-center gap-2">
                 <Calendar className="h-4 w-4" />
                 {t("tabs.history")}
+              </TabsTrigger>
+              <TabsTrigger value="info" className="flex items-center gap-2">
+                <Info className="h-4 w-4" />
+                {t("tabs.info")}
               </TabsTrigger>
               <TabsTrigger value="settings" className="flex items-center gap-2">
                 <Settings className="h-4 w-4" />
@@ -179,6 +184,22 @@ const Index = () => {
                 history={history}
                 onSelectItem={(result) => setCurrentResults([result])}
               />
+            </TabsContent>
+
+            <TabsContent value="info">
+              <Card className="shadow-soft">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Info className="h-6 w-6 text-primary" />
+                    {t("start.disclaimerTitle")}
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-base leading-relaxed whitespace-pre-line text-muted-foreground">
+                    {t("start.disclaimerText")}
+                  </p>
+                </CardContent>
+              </Card>
             </TabsContent>
 
             <TabsContent value="settings">

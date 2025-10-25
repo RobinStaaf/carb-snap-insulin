@@ -38,6 +38,7 @@ const translations: Record<Language, Record<string, string>> = {
     "tabs.capture": "Capture",
     "tabs.meals": "Meals",
     "tabs.history": "History",
+    "tabs.info": "Info",
     "tabs.settings": "Settings",
     
     // Camera
@@ -191,6 +192,7 @@ const translations: Record<Language, Record<string, string>> = {
     "tabs.capture": "Fånga",
     "tabs.meals": "Måltider",
     "tabs.history": "Historik",
+    "tabs.info": "Info",
     "tabs.settings": "Inställningar",
     
     // Camera
