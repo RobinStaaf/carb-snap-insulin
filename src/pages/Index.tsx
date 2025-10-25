@@ -176,10 +176,11 @@ const Index = () => {
                 <DropdownMenuTrigger asChild>
                   <Button
                     variant="ghost"
-                    size="icon"
+                    size="sm"
                     title={t("start.selectLanguage")}
                   >
-                    <Languages className="h-5 w-5" />
+                    <Languages className="h-4 w-4 mr-2" />
+                    Language
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="z-50 bg-background">
