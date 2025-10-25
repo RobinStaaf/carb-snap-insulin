@@ -135,22 +135,23 @@ const Index = () => {
             </TabsList>
 
             <TabsContent value="capture" className="space-y-8">
+              {/* Example Photo */}
+              <div className="rounded-2xl overflow-hidden shadow-card">
+                <img
+                  src={photoExampleImg}
+                  alt="Take a photo of your meal"
+                  className="w-full h-48 object-cover"
+                />
+              </div>
+
               {/* Main Action Button */}
-              <div className="relative">
-                <div className="relative overflow-hidden rounded-2xl shadow-card">
-                  <img
-                    src={photoExampleImg}
-                    alt="Take a photo of your meal"
-                    className="w-full h-48 object-cover opacity-40"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-background/90 via-background/50 to-transparent" />
-                </div>
+              <div>
                 <Button
                   onClick={() => setShowCamera(true)}
-                  className="absolute inset-0 w-full h-full text-2xl bg-gradient-to-r from-primary/80 to-primary/60 hover:from-primary/90 hover:to-primary/70 backdrop-blur-sm"
+                  className="w-full h-24 text-2xl bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 shadow-card"
                   size="lg"
                 >
-                  <Camera className="mr-3 h-12 w-12" />
+                  <Camera className="mr-3 h-10 w-10" />
                   Take Photo
                 </Button>
               </div>
