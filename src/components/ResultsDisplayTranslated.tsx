@@ -86,23 +86,26 @@ const ResultsDisplay = ({ results, onMore, onDone, onClose }: ResultsDisplayProp
 
         {/* Action Buttons */}
         <div className="space-y-3">
-          <Button
-            onClick={onMore}
-            className="w-full h-14 text-lg bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70"
-            size="lg"
-          >
-            <Camera className="mr-2 h-6 w-6" />
-            {t("results.addMore")}
-          </Button>
-          
-          <Button
-            onClick={onDone}
-            className="w-full h-14 text-lg bg-gradient-to-r from-secondary to-secondary/80 hover:from-secondary/90 hover:to-secondary/70"
-            size="lg"
-          >
-            <Check className="mr-2 h-6 w-6" />
-            {t("results.done")}
-          </Button>
+          <div className="flex gap-3">
+            <Button
+              onClick={onMore}
+              variant="outline"
+              className="flex-1 h-14 text-lg"
+              size="lg"
+            >
+              <Camera className="mr-2 h-6 w-6" />
+              {t("results.addMore")}
+            </Button>
+            
+            <Button
+              onClick={onDone}
+              className="flex-1 h-14 text-lg bg-gradient-to-r from-primary to-accent shadow-lg shadow-primary/50 hover:shadow-xl hover:shadow-primary/60"
+              size="lg"
+            >
+              <Check className="mr-2 h-6 w-6" />
+              {t("results.done")}
+            </Button>
+          </div>
           
           <Button
             onClick={onClose}
