@@ -1,11 +1,12 @@
 import { useState } from "react";
-import { Camera } from "lucide-react";
+import { Camera, Calendar } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import CameraCapture from "@/components/CameraCapture";
 import ResultsDisplay from "@/components/ResultsDisplay";
 import SettingsPanel from "@/components/SettingsPanel";
-import HistoryList from "@/components/HistoryList";
+import DailyHistoryView from "@/components/DailyHistoryView";
 
 export interface CalculationResult {
   id: string;
@@ -89,21 +90,7 @@ const Index = () => {
           </p>
         </div>
 
-        {/* Main Action Button */}
-        {!showCamera && !currentResult && (
-          <div className="mb-8">
-            <Button
-              onClick={() => setShowCamera(true)}
-              className="w-full h-32 text-2xl bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 shadow-card"
-              size="lg"
-            >
-              <Camera className="mr-3 h-12 w-12" />
-              Take Photo
-            </Button>
-          </div>
-        )}
-
-        {/* Camera View */}
+        {/* Camera View - Full Screen Override */}
         {showCamera && (
           <CameraCapture
             onCapture={handlePhotoCapture}
@@ -111,7 +98,7 @@ const Index = () => {
           />
         )}
 
-        {/* Results Display */}
+        {/* Results Display - Full Screen Override */}
         {currentResult && (
           <ResultsDisplay
             result={currentResult}
@@ -123,22 +110,47 @@ const Index = () => {
           />
         )}
 
-        {/* Settings Panel */}
+        {/* Main Tabs */}
         {!showCamera && !currentResult && (
-          <>
-            <SettingsPanel
-              insulinRatio={insulinRatio}
-              onRatioChange={setInsulinRatio}
-            />
+          <Tabs defaultValue="capture" className="w-full">
+            <TabsList className="grid w-full grid-cols-2 mb-8">
+              <TabsTrigger value="capture" className="flex items-center gap-2">
+                <Camera className="h-4 w-4" />
+                Capture
+              </TabsTrigger>
+              <TabsTrigger value="history" className="flex items-center gap-2">
+                <Calendar className="h-4 w-4" />
+                History
+              </TabsTrigger>
+            </TabsList>
 
-            {/* History */}
-            {history.length > 0 && (
-              <HistoryList
+            <TabsContent value="capture" className="space-y-8">
+              {/* Main Action Button */}
+              <div>
+                <Button
+                  onClick={() => setShowCamera(true)}
+                  className="w-full h-32 text-2xl bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 shadow-card"
+                  size="lg"
+                >
+                  <Camera className="mr-3 h-12 w-12" />
+                  Take Photo
+                </Button>
+              </div>
+
+              {/* Settings Panel */}
+              <SettingsPanel
+                insulinRatio={insulinRatio}
+                onRatioChange={setInsulinRatio}
+              />
+            </TabsContent>
+
+            <TabsContent value="history">
+              <DailyHistoryView
                 history={history}
                 onSelectItem={setCurrentResult}
               />
-            )}
-          </>
+            </TabsContent>
+          </Tabs>
         )}
       </div>
     </div>
