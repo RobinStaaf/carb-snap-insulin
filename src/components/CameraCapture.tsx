@@ -1,7 +1,9 @@
-import { useRef, useState } from "react";
+import { useState } from "react";
+import { Camera as CameraPlugin, CameraResultType, CameraSource } from "@capacitor/camera";
 import { Camera, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { useToast } from "@/hooks/use-toast";
 
 interface CameraCaptureProps {
   onCapture: (imageDataUrl: string) => void;
@@ -9,18 +11,28 @@ interface CameraCaptureProps {
 }
 
 const CameraCapture = ({ onCapture, onCancel }: CameraCaptureProps) => {
-  const fileInputRef = useRef<HTMLInputElement>(null);
   const [preview, setPreview] = useState<string | null>(null);
+  const { toast } = useToast();
 
-  const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        const result = reader.result as string;
-        setPreview(result);
-      };
-      reader.readAsDataURL(file);
+  const handleTakePhoto = async () => {
+    try {
+      const image = await CameraPlugin.getPhoto({
+        quality: 90,
+        allowEditing: false,
+        resultType: CameraResultType.DataUrl,
+        source: CameraSource.Camera,
+      });
+
+      if (image.dataUrl) {
+        setPreview(image.dataUrl);
+      }
+    } catch (error) {
+      console.error('Camera error:', error);
+      toast({
+        title: "Camera Error",
+        description: "Could not access camera. Please check permissions.",
+        variant: "destructive",
+      });
     }
   };
 
@@ -46,21 +58,13 @@ const CameraCapture = ({ onCapture, onCancel }: CameraCaptureProps) => {
               <Camera className="h-24 w-24 text-muted-foreground" />
             </div>
             <Button
-              onClick={() => fileInputRef.current?.click()}
+              onClick={handleTakePhoto}
               className="w-full h-16 text-xl bg-gradient-to-r from-primary to-primary/80"
               size="lg"
             >
               <Camera className="mr-2 h-6 w-6" />
-              Choose Photo
+              Take Photo
             </Button>
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept="image/*"
-              capture="environment"
-              onChange={handleFileSelect}
-              className="hidden"
-            />
           </div>
         ) : (
           <div className="space-y-4">
