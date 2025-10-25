@@ -196,6 +196,18 @@ const Index = () => {
                   >
                     🇸🇪 Svenska
                   </DropdownMenuItem>
+                  <DropdownMenuItem 
+                    onClick={() => setLanguage("fr")}
+                    className={language === "fr" ? "bg-accent" : ""}
+                  >
+                    🇫🇷 Français
+                  </DropdownMenuItem>
+                  <DropdownMenuItem 
+                    onClick={() => setLanguage("es")}
+                    className={language === "es" ? "bg-accent" : ""}
+                  >
+                    🇪🇸 Español
+                  </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
               {isAdmin && (
