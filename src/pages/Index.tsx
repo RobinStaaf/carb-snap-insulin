@@ -25,16 +25,36 @@ const Index = () => {
 
   const handlePhotoCapture = async (imageDataUrl: string) => {
     try {
-      // Here we'll integrate with Lovable AI to analyze the image
-      // For now, we'll simulate the calculation
-      const estimatedCarbs = Math.floor(Math.random() * 50) + 10; // Placeholder
-      const insulinDose = Number((estimatedCarbs / insulinRatio).toFixed(1));
+      toast({
+        title: "Analyzing...",
+        description: "AI is examining your food photo",
+      });
+
+      const response = await fetch(
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/analyze-food`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+          },
+          body: JSON.stringify({ imageData: imageDataUrl }),
+        }
+      );
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to analyze image");
+      }
+
+      const { carbsEstimate } = await response.json();
+      const insulinDose = Number((carbsEstimate / insulinRatio).toFixed(1));
       
       const result: CalculationResult = {
         id: Date.now().toString(),
         timestamp: new Date(),
         imageUrl: imageDataUrl,
-        carbsEstimate: estimatedCarbs,
+        carbsEstimate,
         insulinDose,
         insulinRatio,
       };
@@ -45,7 +65,7 @@ const Index = () => {
       
       toast({
         title: "Analysis Complete!",
-        description: `Estimated ${estimatedCarbs}g carbs, ${insulinDose} units needed`,
+        description: `Estimated ${carbsEstimate}g carbs, ${insulinDose} units insulin needed`,
       });
     } catch (error) {
       toast({
