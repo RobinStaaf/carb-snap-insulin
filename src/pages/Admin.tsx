@@ -448,7 +448,10 @@ const Admin = () => {
                 />
               </div>
               <div className="flex-1 space-y-2">
-                <Label htmlFor="filterName">Filter by Name</Label>
+                <Label htmlFor="filterName" className="flex items-center gap-2">
+                  <Search className="h-4 w-4" />
+                  Filter by Name
+                </Label>
                 <Input
                   id="filterName"
                   type="text"
