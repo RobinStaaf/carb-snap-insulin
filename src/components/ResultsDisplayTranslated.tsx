@@ -1,79 +1,121 @@
-import { ArrowRight, Camera, X } from "lucide-react";
+import { Camera, X, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { CalculationResult } from "@/pages/Index";
 import { useLanguage } from "@/contexts/LanguageContext";
 
 interface ResultsDisplayProps {
-  result: CalculationResult;
-  onNewCalculation: () => void;
+  results: CalculationResult[];
+  onMore: () => void;
+  onDone: () => void;
   onClose: () => void;
 }
 
-const ResultsDisplay = ({ result, onNewCalculation, onClose }: ResultsDisplayProps) => {
+const ResultsDisplay = ({ results, onMore, onDone, onClose }: ResultsDisplayProps) => {
   const { t } = useLanguage();
-
+  
+  const totalCarbs = results.reduce((sum, r) => sum + r.carbsEstimate, 0);
+  const totalInsulin = results.reduce((sum, r) => sum + r.insulinDose, 0);
+  
   return (
-    <Card className="p-6 shadow-card animate-in fade-in slide-in-from-bottom-4 duration-500">
-      <div className="space-y-6">
-        <div className="flex items-center justify-between">
-          <h2 className="text-2xl font-semibold text-foreground">{t("results.title")}</h2>
+    <div className="fixed inset-0 bg-background z-50 overflow-y-auto">
+      <div className="container mx-auto px-4 py-8 max-w-2xl">
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="text-3xl font-bold text-foreground">{t("results.title")}</h2>
           <Button variant="ghost" size="icon" onClick={onClose}>
             <X className="h-6 w-6" />
           </Button>
         </div>
 
-        {/* Food Image */}
-        <div className="aspect-square rounded-2xl overflow-hidden shadow-soft">
-          <img
-            src={result.imageUrl}
-            alt="Analyzed food"
-            className="w-full h-full object-cover"
-          />
+        {/* Photos Preview */}
+        <div className="space-y-4 mb-8">
+          {results.map((result) => (
+            <div key={result.id} className="rounded-2xl overflow-hidden shadow-card">
+              <img
+                src={result.imageUrl}
+                alt="Analyzed meal"
+                className="w-full h-48 object-cover"
+              />
+              <div className="p-4 bg-card">
+                <p className="text-sm text-muted-foreground">
+                  {t("results.carbs")}: <span className="font-semibold text-foreground">{result.carbsEstimate}g</span>
+                </p>
+              </div>
+            </div>
+          ))}
         </div>
 
-        {/* Calculation Display */}
-        <div className="bg-gradient-to-br from-primary/10 to-accent/10 rounded-2xl p-6 space-y-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-muted-foreground font-medium">{t("results.estimatedCarbs")}</p>
-              <p className="text-4xl font-bold text-primary">{result.carbsEstimate}g</p>
-            </div>
-            <ArrowRight className="h-8 w-8 text-muted-foreground" />
-            <div className="text-right">
-              <p className="text-sm text-muted-foreground font-medium">{t("results.insulinNeeded")}</p>
-              <p className="text-4xl font-bold text-accent">{result.insulinDose}u</p>
-            </div>
-          </div>
+        {/* Results Cards */}
+        <div className="space-y-4 mb-8">
+          <Card className="bg-gradient-to-br from-primary/10 to-primary/5 border-primary/20">
+            <CardContent className="pt-6">
+              <div className="text-center">
+                <p className="text-sm text-muted-foreground mb-2">
+                  {t("results.totalCarbs")}
+                </p>
+                <p className="text-5xl font-bold text-primary mb-1">
+                  {totalCarbs.toFixed(0)}
+                </p>
+                <p className="text-xl text-muted-foreground">{t("results.grams")}</p>
+                {results.length > 1 && (
+                  <p className="text-xs text-muted-foreground mt-2">
+                    {t("results.fromPhotos", { count: results.length })}
+                  </p>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-gradient-to-br from-secondary/10 to-secondary/5 border-secondary/20">
+            <CardContent className="pt-6">
+              <div className="text-center">
+                <p className="text-sm text-muted-foreground mb-2">
+                  {t("results.recommendedInsulin")}
+                </p>
+                <p className="text-5xl font-bold text-secondary-foreground mb-1">
+                  {totalInsulin.toFixed(1)}
+                </p>
+                <p className="text-xl text-muted-foreground">{t("results.units")}</p>
+                <p className="text-xs text-muted-foreground mt-2">
+                  {t("results.basedOnRatio", { ratio: results[0].insulinRatio })}
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Action Buttons */}
+        <div className="space-y-3">
+          <Button
+            onClick={onMore}
+            className="w-full h-14 text-lg bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70"
+            size="lg"
+          >
+            <Camera className="mr-2 h-6 w-6" />
+            {t("results.addMore")}
+          </Button>
           
-          <div className="pt-4 border-t border-border/50">
-            <p className="text-sm text-muted-foreground text-center">
-              {t("results.basedOnRatio", { ratio: result.insulinRatio })}
-            </p>
-          </div>
-        </div>
-
-        {/* Actions */}
-        <div className="flex gap-3">
+          <Button
+            onClick={onDone}
+            className="w-full h-14 text-lg bg-gradient-to-r from-secondary to-secondary/80 hover:from-secondary/90 hover:to-secondary/70"
+            size="lg"
+          >
+            <Check className="mr-2 h-6 w-6" />
+            {t("results.done")}
+          </Button>
+          
           <Button
             onClick={onClose}
             variant="outline"
-            className="flex-1 h-14 text-lg"
+            className="w-full h-14 text-lg"
             size="lg"
           >
-            {t("results.viewHistory")}
-          </Button>
-          <Button
-            onClick={onNewCalculation}
-            className="flex-1 h-14 text-lg bg-gradient-to-r from-primary to-primary/80"
-            size="lg"
-          >
-            <Camera className="mr-2 h-5 w-5" />
-            {t("results.newPhoto")}
+            <X className="mr-2 h-6 w-6" />
+            {t("results.cancel")}
           </Button>
         </div>
       </div>
-    </Card>
+    </div>
   );
 };
 

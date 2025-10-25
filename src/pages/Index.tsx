@@ -26,7 +26,7 @@ const Index = () => {
   const { t } = useLanguage();
   const [showStartPage, setShowStartPage] = useState(true);
   const [showCamera, setShowCamera] = useState(false);
-  const [currentResult, setCurrentResult] = useState<CalculationResult | null>(null);
+  const [currentResults, setCurrentResults] = useState<CalculationResult[]>([]);
   const [history, setHistory] = useState<CalculationResult[]>([]);
   const [insulinRatio, setInsulinRatio] = useState(10); // Default 1:10 ratio
   const [comments, setComments] = useState("");
@@ -71,8 +71,7 @@ const Index = () => {
         insulinRatio,
       };
       
-      setCurrentResult(result);
-      setHistory(prev => [result, ...prev].slice(0, 10));
+      setCurrentResults(prev => [...prev, result]);
       setShowCamera(false);
       
       toast({
@@ -110,19 +109,24 @@ const Index = () => {
         )}
 
         {/* Results Display - Full Screen Override */}
-        {currentResult && (
+        {currentResults.length > 0 && (
           <ResultsDisplay
-            result={currentResult}
-            onNewCalculation={() => {
-              setCurrentResult(null);
-              setShowCamera(true);
+            results={currentResults}
+            onMore={() => setShowCamera(true)}
+            onDone={() => {
+              setHistory(prev => [...currentResults, ...prev].slice(0, 10));
+              setCurrentResults([]);
+              toast({
+                title: t("app.savedToHistory"),
+                description: t("app.savedToHistoryDesc"),
+              });
             }}
-            onClose={() => setCurrentResult(null)}
+            onClose={() => setCurrentResults([])}
           />
         )}
 
         {/* Main Tabs */}
-        {!showCamera && !currentResult && (
+        {!showCamera && currentResults.length === 0 && (
           <Tabs defaultValue="capture" className="w-full">
             <TabsList className="grid w-full grid-cols-4 mb-8">
               <TabsTrigger value="capture" className="flex items-center gap-2">
@@ -173,7 +177,7 @@ const Index = () => {
             <TabsContent value="history">
               <DailyHistoryView
                 history={history}
-                onSelectItem={setCurrentResult}
+                onSelectItem={(result) => setCurrentResults([result])}
               />
             </TabsContent>
 
