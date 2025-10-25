@@ -86,7 +86,7 @@ const Index = () => {
         {/* Header */}
         <div className="text-center mb-8">
           <h1 className="text-4xl font-bold text-foreground mb-2">
-            🍎 CarbSmart
+            CarbSmart
           </h1>
           <p className="text-muted-foreground text-lg">
             Take a photo, know your carbs!
