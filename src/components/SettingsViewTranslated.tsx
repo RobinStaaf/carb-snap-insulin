@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
-import { Lock, ShieldCheck } from "lucide-react";
+import { Lock, ShieldCheck, AlertTriangle } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/contexts/LanguageContext";
 import SettingsPanel from "@/components/SettingsPanelTranslated";
@@ -22,6 +23,7 @@ const SettingsView = ({ insulinRatio, onRatioChange, comments, onCommentsChange 
   const [pin, setPin] = useState("");
   const [confirmPin, setConfirmPin] = useState("");
   const [isSettingPin, setIsSettingPin] = useState(false);
+  const [showDisclaimer, setShowDisclaimer] = useState(false);
   const { toast } = useToast();
   const { t } = useLanguage();
 
@@ -220,7 +222,31 @@ const SettingsView = ({ insulinRatio, onRatioChange, comments, onCommentsChange 
         onRatioChange={onRatioChange}
         comments={comments}
         onCommentsChange={onCommentsChange}
+        onShowDisclaimer={() => setShowDisclaimer(true)}
       />
+
+      {/* Disclaimer Dialog */}
+      <Dialog open={showDisclaimer} onOpenChange={setShowDisclaimer}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <div className="flex items-center gap-2 mb-2">
+              <AlertTriangle className="h-6 w-6 text-destructive" />
+              <DialogTitle className="text-2xl">{t("start.disclaimerTitle")}</DialogTitle>
+            </div>
+            <DialogDescription className="text-base leading-relaxed whitespace-pre-line text-left">
+              {t("start.disclaimerText")}
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button
+              onClick={() => setShowDisclaimer(false)}
+              className="w-full bg-primary hover:bg-primary/90"
+            >
+              {t("start.accept")}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

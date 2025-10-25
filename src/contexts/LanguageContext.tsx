@@ -102,6 +102,7 @@ const translations: Record<Language, Record<string, string>> = {
     "settings.accessGrantedDesc": "Welcome to Settings",
     "settings.incorrectPin": "Incorrect PIN",
     "settings.incorrectPinDesc": "Please try again",
+    "settings.rereadDisclaimer": "Re-read Disclaimer",
     
     // Meal Examples
     "meals.title": "Kid-Friendly Meal Examples",
@@ -254,6 +255,7 @@ const translations: Record<Language, Record<string, string>> = {
     "settings.accessGrantedDesc": "Välkommen till inställningar",
     "settings.incorrectPin": "Felaktig PIN",
     "settings.incorrectPinDesc": "Försök igen",
+    "settings.rereadDisclaimer": "Läs ansvarsfriskrivning igen",
     
     // Meal Examples
     "meals.title": "Barnvänliga måltidsexempel",

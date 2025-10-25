@@ -1,8 +1,9 @@
-import { Settings } from "lucide-react";
+import { Settings, FileText } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/contexts/LanguageContext";
 
 interface SettingsPanelProps {
@@ -10,9 +11,10 @@ interface SettingsPanelProps {
   onRatioChange: (ratio: number) => void;
   comments: string;
   onCommentsChange: (comments: string) => void;
+  onShowDisclaimer?: () => void;
 }
 
-const SettingsPanel = ({ insulinRatio, onRatioChange, comments, onCommentsChange }: SettingsPanelProps) => {
+const SettingsPanel = ({ insulinRatio, onRatioChange, comments, onCommentsChange, onShowDisclaimer }: SettingsPanelProps) => {
   const { t } = useLanguage();
 
   return (
@@ -59,6 +61,17 @@ const SettingsPanel = ({ insulinRatio, onRatioChange, comments, onCommentsChange
             {t("settings.commentsDesc")}
           </p>
         </div>
+
+        {onShowDisclaimer && (
+          <Button
+            variant="outline"
+            onClick={onShowDisclaimer}
+            className="w-full"
+          >
+            <FileText className="h-4 w-4 mr-2" />
+            {t("settings.rereadDisclaimer")}
+          </Button>
+        )}
       </div>
     </Card>
   );
