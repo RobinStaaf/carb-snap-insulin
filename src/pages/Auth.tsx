@@ -208,17 +208,17 @@ const Auth = () => {
                     onChange={(e) => setPassword(e.target.value)}
                     required
                   />
+                  <Button
+                    type="button"
+                    variant="link"
+                    className="p-0 h-auto text-sm"
+                    onClick={() => setShowForgotPassword(true)}
+                  >
+                    {t("auth.forgotPassword")}
+                  </Button>
                 </div>
                 <Button type="submit" className="w-full" disabled={isLoading}>
                   {isLoading ? t("auth.loading") : t("auth.signIn")}
-                </Button>
-                <Button
-                  type="button"
-                  variant="link"
-                  className="w-full mt-2"
-                  onClick={() => setShowForgotPassword(true)}
-                >
-                  {t("auth.forgotPassword")}
                 </Button>
               </form>
             </TabsContent>
@@ -269,17 +269,17 @@ const Auth = () => {
                     onChange={(e) => setPassword(e.target.value)}
                     required
                   />
+                  <Button
+                    type="button"
+                    variant="link"
+                    className="p-0 h-auto text-sm"
+                    onClick={() => setShowForgotPassword(true)}
+                  >
+                    {t("auth.forgotPassword")}
+                  </Button>
                 </div>
                 <Button type="submit" className="w-full" disabled={isLoading}>
                   {isLoading ? t("auth.loading") : t("auth.adminSignIn")}
-                </Button>
-                <Button
-                  type="button"
-                  variant="link"
-                  className="w-full mt-2"
-                  onClick={() => setShowForgotPassword(true)}
-                >
-                  {t("auth.forgotPassword")}
                 </Button>
               </form>
             </TabsContent>
