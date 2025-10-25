@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Shield, UserPlus, ArrowLeft, Trash2 } from "lucide-react";
@@ -35,6 +36,7 @@ const Admin = () => {
   const [deleteUserId, setDeleteUserId] = useState<string | null>(null);
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { t } = useLanguage();
 
   useEffect(() => {
     checkAdminStatus();
@@ -58,8 +60,8 @@ const Admin = () => {
 
       if (!roles) {
         toast({
-          title: "Access Denied",
-          description: "You don't have admin permissions",
+          title: t("admin.accessDenied"),
+          description: t("admin.noPermissions"),
           variant: "destructive",
         });
         navigate("/");
@@ -112,8 +114,8 @@ const Admin = () => {
       if (error) throw error;
 
       toast({
-        title: "User Created",
-        description: `Successfully invited ${email}`,
+        title: t("admin.userCreated"),
+        description: t("admin.successInvite", { email }),
       });
 
       setEmail("");
@@ -122,7 +124,7 @@ const Admin = () => {
       loadUsers();
     } catch (error: any) {
       toast({
-        title: "Error",
+        title: t("app.error"),
         description: error.message || "Failed to create user",
         variant: "destructive",
       });
@@ -142,15 +144,15 @@ const Admin = () => {
       if (error) throw error;
 
       toast({
-        title: "User Deleted",
-        description: "User has been removed",
+        title: t("admin.userDeleted"),
+        description: t("admin.userRemoved"),
       });
 
       setDeleteUserId(null);
       loadUsers();
     } catch (error: any) {
       toast({
-        title: "Error",
+        title: t("app.error"),
         description: error.message || "Failed to delete user",
         variant: "destructive",
       });
@@ -167,20 +169,20 @@ const Admin = () => {
           .eq("role", "admin");
 
         if (error) throw error;
-        toast({ title: "Admin role removed" });
+        toast({ title: t("admin.adminRoleRemoved") });
       } else {
         const { error } = await supabase
           .from("user_roles")
           .insert({ user_id: userId, role: "admin" });
 
         if (error) throw error;
-        toast({ title: "Admin role granted" });
+        toast({ title: t("admin.adminRoleGranted") });
       }
 
       loadUsers();
     } catch (error: any) {
       toast({
-        title: "Error",
+        title: t("app.error"),
         description: error.message || "Failed to update role",
         variant: "destructive",
       });
@@ -195,7 +197,7 @@ const Admin = () => {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <p>Loading...</p>
+        <p>{t("admin.loading")}</p>
       </div>
     );
   }
@@ -210,11 +212,11 @@ const Admin = () => {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <Shield className="h-8 w-8 text-primary" />
-            <h1 className="text-3xl font-bold">Admin Dashboard</h1>
+            <h1 className="text-3xl font-bold">{t("admin.title")}</h1>
           </div>
           <Button variant="outline" onClick={() => navigate("/")}>
             <ArrowLeft className="h-4 w-4 mr-2" />
-            Back to App
+            {t("admin.backToApp")}
           </Button>
         </div>
 
@@ -222,14 +224,14 @@ const Admin = () => {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <UserPlus className="h-5 w-5" />
-              Invite New User
+              {t("admin.inviteUser")}
             </CardTitle>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleCreateUser} className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="email">Email</Label>
+                  <Label htmlFor="email">{t("admin.email")}</Label>
                   <Input
                     id="email"
                     type="email"
@@ -240,19 +242,19 @@ const Admin = () => {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="password">Temporary Password</Label>
+                  <Label htmlFor="password">{t("admin.temporaryPassword")}</Label>
                   <Input
                     id="password"
                     type="password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    placeholder="Min 6 characters"
+                    placeholder={t("admin.minCharacters")}
                     minLength={6}
                     required
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="fullName">Full Name (Optional)</Label>
+                  <Label htmlFor="fullName">{t("admin.fullName")}</Label>
                   <Input
                     id="fullName"
                     type="text"
@@ -263,7 +265,7 @@ const Admin = () => {
                 </div>
               </div>
               <Button type="submit" disabled={isCreating}>
-                {isCreating ? "Creating..." : "Create User Account"}
+                {isCreating ? t("admin.creating") : t("admin.createAccount")}
               </Button>
             </form>
           </CardContent>
@@ -271,17 +273,17 @@ const Admin = () => {
 
         <Card>
           <CardHeader>
-            <CardTitle>Users ({users.length})</CardTitle>
+            <CardTitle>{t("admin.users")} ({users.length})</CardTitle>
           </CardHeader>
           <CardContent>
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Email</TableHead>
-                  <TableHead>Name</TableHead>
-                  <TableHead>Role</TableHead>
-                  <TableHead>Created</TableHead>
-                  <TableHead className="text-right">Actions</TableHead>
+                  <TableHead>{t("admin.email")}</TableHead>
+                  <TableHead>{t("admin.name")}</TableHead>
+                  <TableHead>{t("admin.role")}</TableHead>
+                  <TableHead>{t("admin.created")}</TableHead>
+                  <TableHead className="text-right">{t("admin.actions")}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -305,7 +307,7 @@ const Admin = () => {
                           size="sm"
                           onClick={() => handleToggleAdmin(user.id, role === 'admin')}
                         >
-                          {role === 'admin' ? 'Remove Admin' : 'Make Admin'}
+                          {role === 'admin' ? t("admin.removeAdmin") : t("admin.makeAdmin")}
                         </Button>
                         <Button
                           variant="destructive"
@@ -327,14 +329,14 @@ const Admin = () => {
       <AlertDialog open={!!deleteUserId} onOpenChange={() => setDeleteUserId(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Delete User</AlertDialogTitle>
+            <AlertDialogTitle>{t("admin.deleteUser")}</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to delete this user? This action cannot be undone.
+              {t("admin.deleteConfirm")}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={handleDeleteUser}>Delete</AlertDialogAction>
+            <AlertDialogCancel>{t("admin.cancel")}</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDeleteUser}>{t("admin.delete")}</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
