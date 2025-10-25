@@ -164,16 +164,16 @@ const Auth = () => {
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="bg-background">
             <DropdownMenuItem onClick={() => setLanguage("en")} className={language === "en" ? "bg-accent" : ""}>
-              English
+              🇬🇧 English
             </DropdownMenuItem>
             <DropdownMenuItem onClick={() => setLanguage("sv")} className={language === "sv" ? "bg-accent" : ""}>
-              Svenska
+              🇸🇪 Svenska
             </DropdownMenuItem>
             <DropdownMenuItem onClick={() => setLanguage("fr")} className={language === "fr" ? "bg-accent" : ""}>
-              Français
+              🇫🇷 Français
             </DropdownMenuItem>
             <DropdownMenuItem onClick={() => setLanguage("es")} className={language === "es" ? "bg-accent" : ""}>
-              Español
+              🇪🇸 Español
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
