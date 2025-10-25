@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Camera, Calendar, Utensils, Settings, Info, LogOut, Shield } from "lucide-react";
+import { Camera, Calendar, Utensils, Settings, Info, LogOut, Shield, Languages } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import type { User } from "@supabase/supabase-js";
 import { Button } from "@/components/ui/button";
@@ -8,6 +8,12 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/contexts/LanguageContext";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import CameraCapture from "@/components/CameraCaptureTranslated";
 import ResultsDisplay from "@/components/ResultsDisplayTranslated";
 import DailyHistoryView from "@/components/DailyHistoryViewTranslated";
@@ -27,7 +33,7 @@ export interface CalculationResult {
 
 const Index = () => {
   const { toast } = useToast();
-  const { t } = useLanguage();
+  const { t, language, setLanguage } = useLanguage();
   const navigate = useNavigate();
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -166,6 +172,31 @@ const Index = () => {
               </p>
             </div>
             <div className="flex-1 flex justify-end gap-2">
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    title={t("start.selectLanguage")}
+                  >
+                    <Languages className="h-5 w-5" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="z-50 bg-background">
+                  <DropdownMenuItem 
+                    onClick={() => setLanguage("en")}
+                    className={language === "en" ? "bg-accent" : ""}
+                  >
+                    🇬🇧 English
+                  </DropdownMenuItem>
+                  <DropdownMenuItem 
+                    onClick={() => setLanguage("sv")}
+                    className={language === "sv" ? "bg-accent" : ""}
+                  >
+                    🇸🇪 Svenska
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
               {isAdmin && (
                 <Button
                   variant="ghost"
