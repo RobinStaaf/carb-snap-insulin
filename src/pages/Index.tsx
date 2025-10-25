@@ -222,11 +222,12 @@ const Index = () => {
               )}
               <Button
                 variant="ghost"
-                size="icon"
+                size="sm"
                 onClick={handleSignOut}
                 title={t("auth.signOut")}
               >
-                <LogOut className="h-5 w-5" />
+                <LogOut className="h-4 w-4 mr-2" />
+                {t("auth.signOut")}
               </Button>
             </div>
           </div>
