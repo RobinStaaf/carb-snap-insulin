@@ -18,6 +18,8 @@ const Auth = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showForgotPassword, setShowForgotPassword] = useState(false);
+  const [resetEmail, setResetEmail] = useState("");
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -78,32 +80,65 @@ const Auth = () => {
     setIsLoading(true);
 
     try {
-      const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
+      const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
 
-      if (authError) throw authError;
+      if (error) throw error;
 
       // Check if user has admin role
       const { data: roleData, error: roleError } = await supabase
         .from("user_roles")
         .select("role")
-        .eq("user_id", authData.user.id)
+        .eq("user_id", data.user.id)
         .eq("role", "admin")
         .single();
 
       if (roleError || !roleData) {
         await supabase.auth.signOut();
-        throw new Error(t("auth.notAdmin"));
+        toast({
+          variant: "destructive",
+          title: t("app.error"),
+          description: t("auth.notAdmin"),
+        });
+        return;
       }
 
       navigate("/admin");
     } catch (error: any) {
       toast({
+        variant: "destructive",
         title: t("app.error"),
         description: error.message,
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleForgotPassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(resetEmail, {
+        redirectTo: `${window.location.origin}/auth`,
+      });
+
+      if (error) throw error;
+
+      toast({
+        title: t("auth.resetEmailSent"),
+        description: t("auth.checkEmail"),
+      });
+      setShowForgotPassword(false);
+      setResetEmail("");
+    } catch (error: any) {
+      toast({
         variant: "destructive",
+        title: t("app.error"),
+        description: error.message,
       });
     } finally {
       setIsLoading(false);
@@ -177,6 +212,14 @@ const Auth = () => {
                 <Button type="submit" className="w-full" disabled={isLoading}>
                   {isLoading ? t("auth.loading") : t("auth.signIn")}
                 </Button>
+                <Button
+                  type="button"
+                  variant="link"
+                  className="w-full mt-2"
+                  onClick={() => setShowForgotPassword(true)}
+                >
+                  {t("auth.forgotPassword")}
+                </Button>
               </form>
             </TabsContent>
             
@@ -230,9 +273,49 @@ const Auth = () => {
                 <Button type="submit" className="w-full" disabled={isLoading}>
                   {isLoading ? t("auth.loading") : t("auth.adminSignIn")}
                 </Button>
+                <Button
+                  type="button"
+                  variant="link"
+                  className="w-full mt-2"
+                  onClick={() => setShowForgotPassword(true)}
+                >
+                  {t("auth.forgotPassword")}
+                </Button>
               </form>
             </TabsContent>
           </Tabs>
+
+          {showForgotPassword && (
+            <div className="mt-4 p-6 bg-muted rounded-lg">
+              <h3 className="text-lg font-semibold mb-4">{t("auth.resetPassword")}</h3>
+              <form onSubmit={handleForgotPassword} className="space-y-4">
+                <div className="space-y-2">
+                  <Input
+                    type="email"
+                    placeholder={t("auth.email")}
+                    value={resetEmail}
+                    onChange={(e) => setResetEmail(e.target.value)}
+                    required
+                  />
+                </div>
+                <div className="flex gap-2">
+                  <Button type="submit" disabled={isLoading} className="flex-1">
+                    {isLoading ? t("auth.sending") : t("auth.sendResetLink")}
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => {
+                      setShowForgotPassword(false);
+                      setResetEmail("");
+                    }}
+                  >
+                    {t("auth.cancel")}
+                  </Button>
+                </div>
+              </form>
+            </div>
+          )}
         </CardContent>
       </Card>
     </div>

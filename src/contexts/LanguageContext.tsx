@@ -55,6 +55,13 @@ const translations: Record<Language, Record<string, string>> = {
     "auth.signupSuccess": "Account created",
     "auth.signupSuccessDesc": "You can now sign in with your credentials",
     "auth.signOut": "Sign Out",
+    "auth.forgotPassword": "Forgot Password?",
+    "auth.resetPassword": "Reset Password",
+    "auth.sendResetLink": "Send Reset Link",
+    "auth.resetEmailSent": "Reset Email Sent",
+    "auth.checkEmail": "Check your email for a password reset link",
+    "auth.sending": "Sending...",
+    "auth.cancel": "Cancel",
     
     // Camera
     "camera.title": "Capture Food",
@@ -260,6 +267,13 @@ const translations: Record<Language, Record<string, string>> = {
     "auth.signupSuccess": "Konto skapat",
     "auth.signupSuccessDesc": "Du kan nu logga in med dina uppgifter",
     "auth.signOut": "Logga ut",
+    "auth.forgotPassword": "Glömt lösenord?",
+    "auth.resetPassword": "Återställ lösenord",
+    "auth.sendResetLink": "Skicka återställningslänk",
+    "auth.resetEmailSent": "Återställningsmail skickat",
+    "auth.checkEmail": "Kontrollera din e-post för länk till lösenordsåterställning",
+    "auth.sending": "Skickar...",
+    "auth.cancel": "Avbryt",
     
     // Camera
     "camera.title": "Fånga mat",
@@ -465,6 +479,13 @@ const translations: Record<Language, Record<string, string>> = {
     "auth.signupSuccess": "Compte créé",
     "auth.signupSuccessDesc": "Vous pouvez maintenant vous connecter avec vos identifiants",
     "auth.signOut": "Se déconnecter",
+    "auth.forgotPassword": "Mot de passe oublié?",
+    "auth.resetPassword": "Réinitialiser le mot de passe",
+    "auth.sendResetLink": "Envoyer le lien de réinitialisation",
+    "auth.resetEmailSent": "Email de réinitialisation envoyé",
+    "auth.checkEmail": "Vérifiez votre email pour le lien de réinitialisation du mot de passe",
+    "auth.sending": "Envoi...",
+    "auth.cancel": "Annuler",
     
     // Camera
     "camera.title": "Capturer la nourriture",
@@ -670,6 +691,13 @@ const translations: Record<Language, Record<string, string>> = {
     "auth.signupSuccess": "Cuenta creada",
     "auth.signupSuccessDesc": "Ahora puedes iniciar sesión con tus credenciales",
     "auth.signOut": "Cerrar sesión",
+    "auth.forgotPassword": "¿Olvidaste tu contraseña?",
+    "auth.resetPassword": "Restablecer contraseña",
+    "auth.sendResetLink": "Enviar enlace de restablecimiento",
+    "auth.resetEmailSent": "Email de restablecimiento enviado",
+    "auth.checkEmail": "Revisa tu correo para el enlace de restablecimiento de contraseña",
+    "auth.sending": "Enviando...",
+    "auth.cancel": "Cancelar",
     
     // Camera
     "camera.title": "Capturar comida",
