@@ -17,6 +17,10 @@ const translations: Record<Language, Record<string, string>> = {
     "start.description": "Take photos of meals and get instant carb estimates to help manage your child's diabetes",
     "start.getStarted": "Get Started",
     "start.selectLanguage": "Select Language",
+    "start.disclaimerTitle": "Important Disclaimer",
+    "start.disclaimerText": "This app uses AI to estimate the carbohydrate content of food from images. Results are only estimates and may be inaccurate depending on how photos are taken.\n\nAlways use this tool with care — you should understand the basics of carbohydrate counting and insulin calculation before use.\n\nThe app and its creators do not take responsibility for any medical or dietary decisions based on these results. Always confirm with a healthcare professional when in doubt.",
+    "start.accept": "I Understand and Accept",
+    "start.decline": "Decline",
     
     // Main App
     "app.title": "CarbSmart",
@@ -165,6 +169,10 @@ const translations: Record<Language, Record<string, string>> = {
     "start.description": "Ta bilder på måltider och få omedelbar uppskattning av kolhydrater för att hjälpa till att hantera ditt barns diabetes",
     "start.getStarted": "Kom igång",
     "start.selectLanguage": "Välj språk",
+    "start.disclaimerTitle": "Viktig ansvarsfriskrivning",
+    "start.disclaimerText": "Denna app använder AI för att uppskatta kolhydratinnehållet i mat från bilder. Resultaten är endast uppskattningar och kan vara felaktiga beroende på hur fotona tas.\n\nAnvänd alltid detta verktyg med försiktighet — du bör förstå grunderna för kolhydraträkning och insulinberäkning innan användning.\n\nAppen och dess skapare tar inget ansvar för medicinska eller kostmässiga beslut baserade på dessa resultat. Bekräfta alltid med en vårdpersonal vid tveksamhet.",
+    "start.accept": "Jag förstår och accepterar",
+    "start.decline": "Avböj",
     
     // Main App
     "app.title": "CarbSmart",

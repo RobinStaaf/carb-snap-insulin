@@ -1,8 +1,10 @@
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Globe } from "lucide-react";
+import { ArrowRight, Globe, AlertTriangle } from "lucide-react";
 import carbSmartLogo from "@/assets/carbsmart-logo.png";
 import { useLanguage, Language } from "@/contexts/LanguageContext";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { useState, useEffect } from "react";
 
 interface StartPageProps {
   onStart: () => void;
@@ -10,6 +12,34 @@ interface StartPageProps {
 
 const StartPage = ({ onStart }: StartPageProps) => {
   const { language, setLanguage, t } = useLanguage();
+  const [showDisclaimer, setShowDisclaimer] = useState(false);
+  const [disclaimerAccepted, setDisclaimerAccepted] = useState(false);
+
+  useEffect(() => {
+    const accepted = localStorage.getItem("disclaimerAccepted");
+    if (accepted === "true") {
+      setDisclaimerAccepted(true);
+    }
+  }, []);
+
+  const handleGetStarted = () => {
+    if (disclaimerAccepted) {
+      onStart();
+    } else {
+      setShowDisclaimer(true);
+    }
+  };
+
+  const handleAcceptDisclaimer = () => {
+    localStorage.setItem("disclaimerAccepted", "true");
+    setDisclaimerAccepted(true);
+    setShowDisclaimer(false);
+    onStart();
+  };
+
+  const handleDeclineDisclaimer = () => {
+    setShowDisclaimer(false);
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-secondary/30 flex items-center justify-center">
@@ -53,7 +83,7 @@ const StartPage = ({ onStart }: StartPageProps) => {
           {/* Start Button */}
           <div className="animate-in fade-in slide-in-from-bottom-4 duration-700 delay-500">
             <Button
-              onClick={onStart}
+              onClick={handleGetStarted}
               size="lg"
               className="w-full h-16 text-xl bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 shadow-card"
             >
@@ -63,6 +93,36 @@ const StartPage = ({ onStart }: StartPageProps) => {
           </div>
         </div>
       </div>
+
+      {/* Disclaimer Dialog */}
+      <Dialog open={showDisclaimer} onOpenChange={setShowDisclaimer}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <div className="flex items-center gap-2 mb-2">
+              <AlertTriangle className="h-6 w-6 text-destructive" />
+              <DialogTitle className="text-2xl">{t("start.disclaimerTitle")}</DialogTitle>
+            </div>
+            <DialogDescription className="text-base leading-relaxed whitespace-pre-line text-left">
+              {t("start.disclaimerText")}
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="flex-col sm:flex-row gap-2">
+            <Button
+              variant="outline"
+              onClick={handleDeclineDisclaimer}
+              className="w-full sm:w-auto"
+            >
+              {t("start.decline")}
+            </Button>
+            <Button
+              onClick={handleAcceptDisclaimer}
+              className="w-full sm:w-auto bg-primary hover:bg-primary/90"
+            >
+              {t("start.accept")}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
