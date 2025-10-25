@@ -5,11 +5,12 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { Shield, UserPlus, ArrowLeft, Trash2, Check, X } from "lucide-react";
+import { Shield, UserPlus, ArrowLeft, Trash2, Check, X, BarChart3, Search } from "lucide-react";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 
 interface Profile {
@@ -35,6 +36,13 @@ const Admin = () => {
   const [fullName, setFullName] = useState("");
   const [isCreating, setIsCreating] = useState(false);
   const [deleteUserId, setDeleteUserId] = useState<string | null>(null);
+  const [inviteMessage, setInviteMessage] = useState(
+    "Welcome! You have been invited to join our application. Your temporary password is included below. Please change it after your first login for security purposes."
+  );
+  const [searchEmail, setSearchEmail] = useState("");
+  const [filterName, setFilterName] = useState("");
+  const [totalAppStarts, setTotalAppStarts] = useState(0);
+  const [userGrowthData, setUserGrowthData] = useState<{ date: string; count: number }[]>([]);
   const navigate = useNavigate();
   const { toast } = useToast();
   const { t } = useLanguage();
@@ -92,8 +100,49 @@ const Admin = () => {
 
       if (profiles) setUsers(profiles);
       if (roles) setUserRoles(roles);
+      
+      // Load statistics
+      await loadStatistics();
     } catch (error) {
       console.error("Error loading users:", error);
+    }
+  };
+
+  const loadStatistics = async () => {
+    try {
+      // Get total app starts
+      const { count: startsCount } = await supabase
+        .from("app_statistics")
+        .select("*", { count: 'exact', head: true })
+        .eq("event_type", "app_start");
+      
+      if (startsCount) setTotalAppStarts(startsCount);
+
+      // Get user growth data (users per day for last 30 days)
+      const thirtyDaysAgo = new Date();
+      thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
+      const { data: profiles } = await supabase
+        .from("profiles")
+        .select("created_at")
+        .gte("created_at", thirtyDaysAgo.toISOString());
+
+      if (profiles) {
+        // Group users by date
+        const growthMap = new Map<string, number>();
+        profiles.forEach(profile => {
+          const date = new Date(profile.created_at).toLocaleDateString();
+          growthMap.set(date, (growthMap.get(date) || 0) + 1);
+        });
+
+        const growthData = Array.from(growthMap.entries())
+          .map(([date, count]) => ({ date, count }))
+          .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+        
+        setUserGrowthData(growthData);
+      }
+    } catch (error) {
+      console.error("Error loading statistics:", error);
     }
   };
 
@@ -253,6 +302,13 @@ const Admin = () => {
     return null;
   }
 
+  // Filter users based on search and filter inputs
+  const filteredUsers = users.filter(user => {
+    const matchesEmail = searchEmail === "" || user.email.toLowerCase().includes(searchEmail.toLowerCase());
+    const matchesName = filterName === "" || (user.full_name?.toLowerCase().includes(filterName.toLowerCase()) || false);
+    return matchesEmail && matchesName;
+  });
+
   return (
     <div className="min-h-screen bg-background p-6">
       <div className="max-w-6xl mx-auto space-y-6">
@@ -267,6 +323,49 @@ const Admin = () => {
           </Button>
         </div>
 
+        {/* Statistics Card */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <BarChart3 className="h-5 w-5" />
+              Statistics
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="space-y-1">
+                <p className="text-sm text-muted-foreground">Total Users</p>
+                <p className="text-2xl font-bold">{users.length}</p>
+              </div>
+              <div className="space-y-1">
+                <p className="text-sm text-muted-foreground">App Starts</p>
+                <p className="text-2xl font-bold">{totalAppStarts}</p>
+              </div>
+              <div className="space-y-1">
+                <p className="text-sm text-muted-foreground">New Users (30 days)</p>
+                <p className="text-2xl font-bold">
+                  {userGrowthData.reduce((sum, item) => sum + item.count, 0)}
+                </p>
+              </div>
+            </div>
+            {userGrowthData.length > 0 && (
+              <div className="mt-4">
+                <p className="text-sm font-medium mb-2">User Growth (Last 30 Days)</p>
+                <div className="flex gap-1 h-24 items-end">
+                  {userGrowthData.map((item, index) => (
+                    <div
+                      key={index}
+                      className="flex-1 bg-primary rounded-t hover:bg-primary/80 transition-colors"
+                      style={{ height: `${(item.count / Math.max(...userGrowthData.map(d => d.count))) * 100}%` }}
+                      title={`${item.date}: ${item.count} users`}
+                    />
+                  ))}
+                </div>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
@@ -276,6 +375,17 @@ const Admin = () => {
           </CardHeader>
           <CardContent>
             <form onSubmit={handleCreateUser} className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="inviteMessage">Invitation Message</Label>
+                <Textarea
+                  id="inviteMessage"
+                  value={inviteMessage}
+                  onChange={(e) => setInviteMessage(e.target.value)}
+                  placeholder="Enter invitation message..."
+                  rows={4}
+                  className="resize-none"
+                />
+              </div>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="email">{t("admin.email")}</Label>
@@ -320,9 +430,34 @@ const Admin = () => {
 
         <Card>
           <CardHeader>
-            <CardTitle>{t("admin.users")} ({users.length})</CardTitle>
+            <CardTitle>{t("admin.users")} ({filteredUsers.length})</CardTitle>
           </CardHeader>
           <CardContent>
+            <div className="mb-4 flex gap-4">
+              <div className="flex-1 space-y-2">
+                <Label htmlFor="searchEmail" className="flex items-center gap-2">
+                  <Search className="h-4 w-4" />
+                  Search by Email
+                </Label>
+                <Input
+                  id="searchEmail"
+                  type="text"
+                  value={searchEmail}
+                  onChange={(e) => setSearchEmail(e.target.value)}
+                  placeholder="Search email..."
+                />
+              </div>
+              <div className="flex-1 space-y-2">
+                <Label htmlFor="filterName">Filter by Name</Label>
+                <Input
+                  id="filterName"
+                  type="text"
+                  value={filterName}
+                  onChange={(e) => setFilterName(e.target.value)}
+                  placeholder="Filter name..."
+                />
+              </div>
+            </div>
             <Table>
               <TableHeader>
                 <TableRow>
@@ -335,7 +470,7 @@ const Admin = () => {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {users.map((user) => {
+                {filteredUsers.map((user) => {
                   const role = getUserRole(user.id);
                   return (
                     <TableRow key={user.id}>

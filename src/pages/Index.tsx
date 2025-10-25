@@ -74,6 +74,19 @@ const Index = () => {
   useEffect(() => {
     if (!isLoading && !user) {
       navigate("/auth");
+    } else if (user) {
+      // Track app start
+      const trackAppStart = async () => {
+        try {
+          await supabase.from("app_statistics").insert({
+            user_id: user.id,
+            event_type: "app_start"
+          });
+        } catch (error) {
+          console.error("Error tracking app start:", error);
+        }
+      };
+      trackAppStart();
     }
   }, [user, isLoading, navigate]);
 
