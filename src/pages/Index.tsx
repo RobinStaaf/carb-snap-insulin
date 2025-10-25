@@ -25,6 +25,7 @@ const Index = () => {
   const [currentResult, setCurrentResult] = useState<CalculationResult | null>(null);
   const [history, setHistory] = useState<CalculationResult[]>([]);
   const [insulinRatio, setInsulinRatio] = useState(10); // Default 1:10 ratio
+  const [comments, setComments] = useState("");
 
   const handlePhotoCapture = async (imageDataUrl: string) => {
     try {
@@ -172,6 +173,8 @@ const Index = () => {
               <SettingsView
                 insulinRatio={insulinRatio}
                 onRatioChange={setInsulinRatio}
+                comments={comments}
+                onCommentsChange={setComments}
               />
             </TabsContent>
           </Tabs>

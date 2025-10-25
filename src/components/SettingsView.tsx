@@ -9,11 +9,13 @@ import SettingsPanel from "@/components/SettingsPanel";
 interface SettingsViewProps {
   insulinRatio: number;
   onRatioChange: (ratio: number) => void;
+  comments: string;
+  onCommentsChange: (comments: string) => void;
 }
 
 const PIN_STORAGE_KEY = "carbsmart_parental_pin";
 
-const SettingsView = ({ insulinRatio, onRatioChange }: SettingsViewProps) => {
+const SettingsView = ({ insulinRatio, onRatioChange, comments, onCommentsChange }: SettingsViewProps) => {
   const [isUnlocked, setIsUnlocked] = useState(false);
   const [hasPin, setHasPin] = useState(false);
   const [pin, setPin] = useState("");
@@ -214,6 +216,8 @@ const SettingsView = ({ insulinRatio, onRatioChange }: SettingsViewProps) => {
       <SettingsPanel
         insulinRatio={insulinRatio}
         onRatioChange={onRatioChange}
+        comments={comments}
+        onCommentsChange={onCommentsChange}
       />
     </div>
   );
