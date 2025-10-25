@@ -8,6 +8,7 @@ import ResultsDisplay from "@/components/ResultsDisplay";
 import DailyHistoryView from "@/components/DailyHistoryView";
 import MealExamplesView from "@/components/MealExamplesView";
 import SettingsView from "@/components/SettingsView";
+import StartPage from "@/pages/StartPage";
 import photoExampleImg from "@/assets/photo-meal-example.jpg";
 
 export interface CalculationResult {
@@ -21,11 +22,16 @@ export interface CalculationResult {
 
 const Index = () => {
   const { toast } = useToast();
+  const [showStartPage, setShowStartPage] = useState(true);
   const [showCamera, setShowCamera] = useState(false);
   const [currentResult, setCurrentResult] = useState<CalculationResult | null>(null);
   const [history, setHistory] = useState<CalculationResult[]>([]);
   const [insulinRatio, setInsulinRatio] = useState(10); // Default 1:10 ratio
   const [comments, setComments] = useState("");
+
+  if (showStartPage) {
+    return <StartPage onStart={() => setShowStartPage(false)} />;
+  }
 
   const handlePhotoCapture = async (imageDataUrl: string) => {
     try {
