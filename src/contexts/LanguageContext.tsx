@@ -41,6 +41,18 @@ const translations: Record<Language, Record<string, string>> = {
     "tabs.info": "Info",
     "tabs.settings": "Settings",
     
+    // Auth
+    "auth.welcome": "Welcome to CarbSmart",
+    "auth.welcomeDesc": "Sign in or create an account to continue",
+    "auth.signIn": "Sign In",
+    "auth.signUp": "Sign Up",
+    "auth.email": "Email",
+    "auth.password": "Password (min 6 characters)",
+    "auth.loading": "Loading...",
+    "auth.signupSuccess": "Account created",
+    "auth.signupSuccessDesc": "You can now sign in with your credentials",
+    "auth.signOut": "Sign Out",
+    
     // Camera
     "camera.title": "Capture Food",
     "camera.takePhoto": "Take Photo",
@@ -194,6 +206,18 @@ const translations: Record<Language, Record<string, string>> = {
     "tabs.history": "Historik",
     "tabs.info": "Info",
     "tabs.settings": "Inställningar",
+    
+    // Auth
+    "auth.welcome": "Välkommen till CarbSmart",
+    "auth.welcomeDesc": "Logga in eller skapa ett konto för att fortsätta",
+    "auth.signIn": "Logga in",
+    "auth.signUp": "Registrera",
+    "auth.email": "E-post",
+    "auth.password": "Lösenord (minst 6 tecken)",
+    "auth.loading": "Laddar...",
+    "auth.signupSuccess": "Konto skapat",
+    "auth.signupSuccessDesc": "Du kan nu logga in med dina uppgifter",
+    "auth.signOut": "Logga ut",
     
     // Camera
     "camera.title": "Fånga mat",

@@ -1,5 +1,8 @@
-import { useState } from "react";
-import { Camera, Calendar, Utensils, Settings, Info } from "lucide-react";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { Camera, Calendar, Utensils, Settings, Info, LogOut } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import type { User } from "@supabase/supabase-js";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -25,12 +28,56 @@ export interface CalculationResult {
 const Index = () => {
   const { toast } = useToast();
   const { t } = useLanguage();
+  const navigate = useNavigate();
+  const [user, setUser] = useState<User | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
   const [showStartPage, setShowStartPage] = useState(true);
   const [showCamera, setShowCamera] = useState(false);
   const [currentResults, setCurrentResults] = useState<CalculationResult[]>([]);
   const [history, setHistory] = useState<CalculationResult[]>([]);
   const [insulinRatio, setInsulinRatio] = useState(10); // Default 1:10 ratio
   const [comments, setComments] = useState("");
+
+  useEffect(() => {
+    // Set up auth state listener
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (_event, session) => {
+        setUser(session?.user ?? null);
+        setIsLoading(false);
+      }
+    );
+
+    // Check for existing session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null);
+      setIsLoading(false);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  useEffect(() => {
+    if (!isLoading && !user) {
+      navigate("/auth");
+    }
+  }, [user, isLoading, navigate]);
+
+  const handleSignOut = async () => {
+    await supabase.auth.signOut();
+    navigate("/auth");
+  };
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-background to-secondary/30 flex items-center justify-center">
+        <p className="text-muted-foreground">{t("auth.loading")}</p>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return null;
+  }
 
   if (showStartPage) {
     return <StartPage onStart={() => setShowStartPage(false)} />;
@@ -43,24 +90,15 @@ const Index = () => {
         description: t("app.analyzingDesc"),
       });
 
-      const response = await fetch(
-        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/analyze-food`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
-          },
-          body: JSON.stringify({ imageData: imageDataUrl }),
-        }
-      );
+      const { data, error } = await supabase.functions.invoke("analyze-food", {
+        body: { imageData: imageDataUrl },
+      });
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || "Failed to analyze image");
+      if (error) {
+        throw error;
       }
 
-      const { carbsEstimate } = await response.json();
+      const { carbsEstimate } = data;
       const insulinDose = Number((carbsEstimate / insulinRatio).toFixed(1));
       
       const result: CalculationResult = {
@@ -93,12 +131,27 @@ const Index = () => {
       <div className="container mx-auto px-4 py-8 max-w-2xl">
         {/* Header */}
         <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-foreground mb-2">
-            {t("app.title")}
-          </h1>
-          <p className="text-muted-foreground text-lg">
-            {t("app.subtitle")}
-          </p>
+          <div className="flex justify-between items-start mb-4">
+            <div className="flex-1" />
+            <div className="flex-1">
+              <h1 className="text-4xl font-bold text-foreground mb-2">
+                {t("app.title")}
+              </h1>
+              <p className="text-muted-foreground text-lg">
+                {t("app.subtitle")}
+              </p>
+            </div>
+            <div className="flex-1 flex justify-end">
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={handleSignOut}
+                title={t("auth.signOut")}
+              >
+                <LogOut className="h-5 w-5" />
+              </Button>
+            </div>
+          </div>
         </div>
 
         {/* Camera View - Full Screen Override */}
