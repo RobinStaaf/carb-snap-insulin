@@ -1,13 +1,13 @@
 import { useState } from "react";
-import { Camera, Calendar, Utensils } from "lucide-react";
+import { Camera, Calendar, Utensils, Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import CameraCapture from "@/components/CameraCapture";
 import ResultsDisplay from "@/components/ResultsDisplay";
-import SettingsPanel from "@/components/SettingsPanel";
 import DailyHistoryView from "@/components/DailyHistoryView";
 import MealExamplesView from "@/components/MealExamplesView";
+import SettingsView from "@/components/SettingsView";
 
 export interface CalculationResult {
   id: string;
@@ -114,7 +114,7 @@ const Index = () => {
         {/* Main Tabs */}
         {!showCamera && !currentResult && (
           <Tabs defaultValue="capture" className="w-full">
-            <TabsList className="grid w-full grid-cols-3 mb-8">
+            <TabsList className="grid w-full grid-cols-4 mb-8">
               <TabsTrigger value="capture" className="flex items-center gap-2">
                 <Camera className="h-4 w-4" />
                 Capture
@@ -126,6 +126,10 @@ const Index = () => {
               <TabsTrigger value="history" className="flex items-center gap-2">
                 <Calendar className="h-4 w-4" />
                 History
+              </TabsTrigger>
+              <TabsTrigger value="settings" className="flex items-center gap-2">
+                <Settings className="h-4 w-4" />
+                Settings
               </TabsTrigger>
             </TabsList>
 
@@ -141,12 +145,6 @@ const Index = () => {
                   Take Photo
                 </Button>
               </div>
-
-              {/* Settings Panel */}
-              <SettingsPanel
-                insulinRatio={insulinRatio}
-                onRatioChange={setInsulinRatio}
-              />
             </TabsContent>
 
             <TabsContent value="examples">
@@ -157,6 +155,13 @@ const Index = () => {
               <DailyHistoryView
                 history={history}
                 onSelectItem={setCurrentResult}
+              />
+            </TabsContent>
+
+            <TabsContent value="settings">
+              <SettingsView
+                insulinRatio={insulinRatio}
+                onRatioChange={setInsulinRatio}
               />
             </TabsContent>
           </Tabs>
