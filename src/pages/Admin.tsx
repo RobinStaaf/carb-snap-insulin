@@ -19,6 +19,7 @@ interface Profile {
   full_name: string | null;
   created_at: string;
   status: 'pending' | 'approved' | 'declined';
+  last_login: string | null;
 }
 
 interface UserRole {
@@ -469,6 +470,7 @@ const Admin = () => {
                   <TableHead>{t("admin.status")}</TableHead>
                   <TableHead>{t("admin.role")}</TableHead>
                   <TableHead>{t("admin.created")}</TableHead>
+                  <TableHead>Last Login</TableHead>
                   <TableHead className="text-right">{t("admin.actions")}</TableHead>
                 </TableRow>
               </TableHeader>
@@ -497,6 +499,11 @@ const Admin = () => {
                       </TableCell>
                       <TableCell>
                         {new Date(user.created_at).toLocaleDateString()}
+                      </TableCell>
+                      <TableCell>
+                        {user.last_login 
+                          ? new Date(user.last_login).toLocaleString()
+                          : "Never"}
                       </TableCell>
                       <TableCell className="text-right space-x-2">
                         {user.status === 'pending' && (
