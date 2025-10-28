@@ -43,6 +43,7 @@ export type Database = {
           id: string
           invited_by: string | null
           last_login: string | null
+          login_count: number
           status: Database["public"]["Enums"]["user_status"]
         }
         Insert: {
@@ -52,6 +53,7 @@ export type Database = {
           id: string
           invited_by?: string | null
           last_login?: string | null
+          login_count?: number
           status?: Database["public"]["Enums"]["user_status"]
         }
         Update: {
@@ -61,6 +63,7 @@ export type Database = {
           id?: string
           invited_by?: string | null
           last_login?: string | null
+          login_count?: number
           status?: Database["public"]["Enums"]["user_status"]
         }
         Relationships: []

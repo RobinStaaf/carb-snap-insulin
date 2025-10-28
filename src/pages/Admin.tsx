@@ -20,6 +20,7 @@ interface Profile {
   created_at: string;
   status: 'pending' | 'approved' | 'declined';
   last_login: string | null;
+  login_count: number;
 }
 
 interface UserRole {
@@ -470,6 +471,7 @@ const Admin = () => {
                   <TableHead>{t("admin.status")}</TableHead>
                   <TableHead>{t("admin.role")}</TableHead>
                   <TableHead>{t("admin.created")}</TableHead>
+                  <TableHead>Login Count</TableHead>
                   <TableHead>Last Login</TableHead>
                   <TableHead className="text-right">{t("admin.actions")}</TableHead>
                 </TableRow>
@@ -499,6 +501,9 @@ const Admin = () => {
                       </TableCell>
                       <TableCell>
                         {new Date(user.created_at).toLocaleDateString()}
+                      </TableCell>
+                      <TableCell>
+                        {user.login_count}
                       </TableCell>
                       <TableCell>
                         {user.last_login 
