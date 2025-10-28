@@ -24,7 +24,7 @@ const translations: Record<Language, Record<string, string>> = {
     
     // Main App
     "app.title": "CarbSmart",
-    "app.subtitle": "Take a photo, know your carbs!",
+    "app.subtitle": "your carb counter",
     "app.analyzing": "Analyzing...",
     "app.analyzingDesc": "AI is examining your food photo",
     "app.analysisComplete": "Analysis Complete!",
@@ -248,7 +248,7 @@ const translations: Record<Language, Record<string, string>> = {
     
     // Main App
     "app.title": "CarbSmart",
-    "app.subtitle": "Ta ett foto, känn dina kolhydrater!",
+    "app.subtitle": "din kolhydratmätare",
     "app.analyzing": "Analyserar...",
     "app.analyzingDesc": "AI undersöker din matbild",
     "app.analysisComplete": "Analys klar!",
@@ -472,7 +472,7 @@ const translations: Record<Language, Record<string, string>> = {
     
     // Main App
     "app.title": "CarbSmart",
-    "app.subtitle": "Prenez une photo, connaissez vos glucides!",
+    "app.subtitle": "votre compteur de glucides",
     "app.analyzing": "Analyse en cours...",
     "app.analyzingDesc": "L'IA examine votre photo de nourriture",
     "app.analysisComplete": "Analyse terminée!",
@@ -696,7 +696,7 @@ const translations: Record<Language, Record<string, string>> = {
     
     // Main App
     "app.title": "CarbSmart",
-    "app.subtitle": "¡Toma una foto, conoce tus carbohidratos!",
+    "app.subtitle": "tu contador de carbohidratos",
     "app.analyzing": "Analizando...",
     "app.analyzingDesc": "La IA está examinando tu foto de comida",
     "app.analysisComplete": "¡Análisis completo!",
