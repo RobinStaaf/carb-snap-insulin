@@ -517,6 +517,7 @@ const Admin = () => {
                               variant="default"
                               size="sm"
                               onClick={() => handleApproveUser(user.id)}
+                              className="w-24"
                             >
                               <Check className="h-4 w-4 mr-1" />
                               {t("admin.approve")}
@@ -525,6 +526,7 @@ const Admin = () => {
                               variant="destructive"
                               size="sm"
                               onClick={() => handleDeclineUser(user.id)}
+                              className="w-24"
                             >
                               <X className="h-4 w-4 mr-1" />
                               {t("admin.decline")}
