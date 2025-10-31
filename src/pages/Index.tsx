@@ -154,7 +154,7 @@ const Index = () => {
       };
       
       setCurrentResults(prev => [...prev, result]);
-      setShowCamera(false);
+      setShowCamera(false); // Close camera to show results
       
       toast({
         title: t("app.analysisComplete"),
@@ -166,6 +166,7 @@ const Index = () => {
         description: t("app.errorDesc"),
         variant: "destructive",
       });
+      setShowCamera(false);
     }
   };
 
@@ -250,12 +251,20 @@ const Index = () => {
         {showCamera && (
           <CameraCapture
             onCapture={handlePhotoCapture}
-            onCancel={() => setShowCamera(false)}
+            onCancel={() => {
+              if (currentResults.length > 0) {
+                // If we have results, show them instead of closing
+                setShowCamera(false);
+              } else {
+                // No results, go back to main view
+                setShowCamera(false);
+              }
+            }}
           />
         )}
 
         {/* Results Display - Full Screen Override */}
-        {currentResults.length > 0 && (
+        {!showCamera && currentResults.length > 0 && (
           <ResultsDisplay
             results={currentResults}
             onMore={() => setShowCamera(true)}
