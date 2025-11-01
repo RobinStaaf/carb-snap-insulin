@@ -35,6 +35,39 @@ export type Database = {
         }
         Relationships: []
       }
+      meal_logs: {
+        Row: {
+          carbs_estimate: number
+          created_at: string
+          id: string
+          image_url: string
+          insulin_dose: number
+          insulin_ratio: number
+          timestamp: string
+          user_id: string
+        }
+        Insert: {
+          carbs_estimate: number
+          created_at?: string
+          id?: string
+          image_url: string
+          insulin_dose: number
+          insulin_ratio: number
+          timestamp?: string
+          user_id: string
+        }
+        Update: {
+          carbs_estimate?: number
+          created_at?: string
+          id?: string
+          image_url?: string
+          insulin_dose?: number
+          insulin_ratio?: number
+          timestamp?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string | null

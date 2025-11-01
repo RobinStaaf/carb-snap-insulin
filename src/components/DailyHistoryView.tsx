@@ -1,8 +1,9 @@
 import { useMemo } from "react";
-import { format, startOfDay, isSameDay } from "date-fns";
+import { format, startOfDay, isSameDay, startOfWeek, startOfMonth, isWithinInterval } from "date-fns";
 import { Card } from "@/components/ui/card";
 import { CalculationResult } from "@/pages/Index";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 interface DailyHistoryViewProps {
   history: CalculationResult[];
@@ -41,6 +42,36 @@ const DailyHistoryView = ({ history, onSelectItem }: DailyHistoryViewProps) => {
     return Array.from(summaryMap.values()).sort((a, b) => b.date.getTime() - a.date.getTime());
   }, [history]);
 
+  const weekSummary = useMemo(() => {
+    const now = new Date();
+    const weekStart = startOfWeek(now);
+    
+    const weekData = history.filter(item => 
+      isWithinInterval(item.timestamp, { start: weekStart, end: now })
+    );
+
+    return {
+      totalCarbs: weekData.reduce((sum, item) => sum + item.carbsEstimate, 0),
+      totalInsulin: weekData.reduce((sum, item) => sum + item.insulinDose, 0),
+      mealCount: weekData.length,
+    };
+  }, [history]);
+
+  const monthSummary = useMemo(() => {
+    const now = new Date();
+    const monthStart = startOfMonth(now);
+    
+    const monthData = history.filter(item => 
+      isWithinInterval(item.timestamp, { start: monthStart, end: now })
+    );
+
+    return {
+      totalCarbs: monthData.reduce((sum, item) => sum + item.carbsEstimate, 0),
+      totalInsulin: monthData.reduce((sum, item) => sum + item.insulinDose, 0),
+      mealCount: monthData.length,
+    };
+  }, [history]);
+
   const formatTime = (date: Date) => {
     return format(date, "h:mm a");
   };
@@ -62,7 +93,28 @@ const DailyHistoryView = ({ history, onSelectItem }: DailyHistoryViewProps) => {
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-6">
+      {/* Summary Cards */}
+      <div className="grid grid-cols-2 gap-4">
+        <Card className="p-4 shadow-soft">
+          <h3 className="text-sm text-muted-foreground mb-2">This Week</h3>
+          <div className="space-y-1">
+            <p className="text-2xl font-bold text-primary">{weekSummary.totalCarbs.toFixed(0)}g</p>
+            <p className="text-sm text-muted-foreground">{weekSummary.totalInsulin.toFixed(1)}u insulin</p>
+            <p className="text-xs text-muted-foreground">{weekSummary.mealCount} meals</p>
+          </div>
+        </Card>
+        <Card className="p-4 shadow-soft">
+          <h3 className="text-sm text-muted-foreground mb-2">This Month</h3>
+          <div className="space-y-1">
+            <p className="text-2xl font-bold text-primary">{monthSummary.totalCarbs.toFixed(0)}g</p>
+            <p className="text-sm text-muted-foreground">{monthSummary.totalInsulin.toFixed(1)}u insulin</p>
+            <p className="text-xs text-muted-foreground">{monthSummary.mealCount} meals</p>
+          </div>
+        </Card>
+      </div>
+
+      {/* Daily History */}
       <Accordion type="multiple" className="space-y-4" defaultValue={[format(dailySummaries[0]?.date, "yyyy-MM-dd")]}>
         {dailySummaries.map((summary) => (
           <AccordionItem

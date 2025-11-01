@@ -87,6 +87,34 @@ const Index = () => {
         }
       };
       trackAppStart();
+
+      // Load meal history from database
+      const loadHistory = async () => {
+        try {
+          const { data, error } = await supabase
+            .from("meal_logs")
+            .select("*")
+            .eq("user_id", user.id)
+            .order("timestamp", { ascending: false });
+
+          if (error) throw error;
+
+          if (data) {
+            const loadedHistory: CalculationResult[] = data.map((log) => ({
+              id: log.id,
+              timestamp: new Date(log.timestamp),
+              imageUrl: log.image_url,
+              carbsEstimate: Number(log.carbs_estimate),
+              insulinDose: Number(log.insulin_dose),
+              insulinRatio: Number(log.insulin_ratio),
+            }));
+            setHistory(loadedHistory);
+          }
+        } catch (error) {
+          console.error("Error loading history:", error);
+        }
+      };
+      loadHistory();
     }
   }, [user, isLoading, navigate]);
 
@@ -268,13 +296,38 @@ const Index = () => {
           <ResultsDisplay
             results={currentResults}
             onMore={() => setShowCamera(true)}
-            onDone={() => {
-              setHistory(prev => [...currentResults, ...prev].slice(0, 10));
-              setCurrentResults([]);
-              toast({
-                title: t("app.savedToHistory"),
-                description: t("app.savedToHistoryDesc"),
-              });
+            onDone={async () => {
+              try {
+                // Save each result to database
+                const savePromises = currentResults.map((result) =>
+                  supabase.from("meal_logs").insert({
+                    user_id: user!.id,
+                    timestamp: result.timestamp.toISOString(),
+                    image_url: result.imageUrl,
+                    carbs_estimate: result.carbsEstimate,
+                    insulin_dose: result.insulinDose,
+                    insulin_ratio: result.insulinRatio,
+                  })
+                );
+
+                await Promise.all(savePromises);
+
+                // Update local history
+                setHistory(prev => [...currentResults, ...prev]);
+                setCurrentResults([]);
+                
+                toast({
+                  title: t("app.savedToHistory"),
+                  description: t("app.savedToHistoryDesc"),
+                });
+              } catch (error) {
+                console.error("Error saving to history:", error);
+                toast({
+                  title: t("app.error"),
+                  description: "Failed to save meal data",
+                  variant: "destructive",
+                });
+              }
             }}
             onClose={() => setCurrentResults([])}
           />
