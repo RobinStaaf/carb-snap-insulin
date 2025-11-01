@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Camera, Calendar, Utensils, Settings, Info, LogOut, Shield, Languages } from "lucide-react";
+import { Camera, Calendar, Utensils, Settings, Info, LogOut, Shield, Languages, Menu } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import type { User } from "@supabase/supabase-js";
 import { Button } from "@/components/ui/button";
@@ -221,7 +221,7 @@ const Index = () => {
                     title="Menu"
                     className="h-9 w-9"
                   >
-                    <Settings className="h-5 w-5" />
+                    <Menu className="h-5 w-5" />
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="z-50 bg-background w-48">
