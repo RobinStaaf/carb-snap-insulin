@@ -202,75 +202,76 @@ const Index = () => {
     <div className="min-h-screen bg-gradient-to-b from-background to-secondary/30">
       <div className="container mx-auto px-4 py-8 max-w-2xl">
         {/* Header */}
-        <div className="text-center mb-8">
-          <div className="flex justify-between items-start mb-4">
-            <div className="flex-1" />
-            <div className="flex-1">
-              <h1 className="text-4xl font-bold text-foreground mb-2">
+        <div className="mb-6 md:mb-8">
+          <div className="flex justify-between items-center gap-2 mb-4">
+            <div className="flex-1 text-center md:text-center">
+              <h1 className="text-2xl md:text-4xl font-bold text-foreground mb-1 md:mb-2">
                 {t("app.title")}
               </h1>
-              <p className="text-muted-foreground text-lg">
+              <p className="text-muted-foreground text-sm md:text-lg">
                 {t("app.subtitle")}
               </p>
             </div>
-            <div className="flex-1 flex justify-end gap-2">
+            <div className="flex items-center gap-1">
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button
                     variant="ghost"
-                    size="sm"
-                    title={t("start.selectLanguage")}
+                    size="icon"
+                    title="Menu"
+                    className="h-9 w-9"
                   >
-                    <Languages className="h-4 w-4 mr-2" />
-                    Language
+                    <Settings className="h-5 w-5" />
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="z-50 bg-background">
+                <DropdownMenuContent align="end" className="z-50 bg-background w-48">
+                  <div className="px-2 py-1.5 text-sm font-semibold">
+                    {t("start.selectLanguage")}
+                  </div>
                   <DropdownMenuItem 
                     onClick={() => setLanguage("en")}
                     className={language === "en" ? "bg-accent" : ""}
                   >
+                    <Languages className="h-4 w-4 mr-2" />
                     🇬🇧 English
                   </DropdownMenuItem>
                   <DropdownMenuItem 
                     onClick={() => setLanguage("sv")}
                     className={language === "sv" ? "bg-accent" : ""}
                   >
+                    <Languages className="h-4 w-4 mr-2" />
                     🇸🇪 Svenska
                   </DropdownMenuItem>
                   <DropdownMenuItem 
                     onClick={() => setLanguage("fr")}
                     className={language === "fr" ? "bg-accent" : ""}
                   >
+                    <Languages className="h-4 w-4 mr-2" />
                     🇫🇷 Français
                   </DropdownMenuItem>
                   <DropdownMenuItem 
                     onClick={() => setLanguage("es")}
                     className={language === "es" ? "bg-accent" : ""}
                   >
+                    <Languages className="h-4 w-4 mr-2" />
                     🇪🇸 Español
+                  </DropdownMenuItem>
+                  {isAdmin && (
+                    <>
+                      <div className="h-px bg-border my-1" />
+                      <DropdownMenuItem onClick={() => navigate("/admin")}>
+                        <Shield className="h-4 w-4 mr-2" />
+                        Admin Dashboard
+                      </DropdownMenuItem>
+                    </>
+                  )}
+                  <div className="h-px bg-border my-1" />
+                  <DropdownMenuItem onClick={handleSignOut}>
+                    <LogOut className="h-4 w-4 mr-2" />
+                    {t("auth.signOut")}
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
-              {isAdmin && (
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => navigate("/admin")}
-                  title="Admin Dashboard"
-                >
-                  <Shield className="h-5 w-5" />
-                </Button>
-              )}
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={handleSignOut}
-                title={t("auth.signOut")}
-              >
-                <LogOut className="h-4 w-4 mr-2" />
-                {t("auth.signOut")}
-              </Button>
             </div>
           </div>
         </div>
@@ -336,26 +337,26 @@ const Index = () => {
         {/* Main Tabs */}
         {!showCamera && currentResults.length === 0 && (
           <Tabs defaultValue="capture" className="w-full">
-            <TabsList className="grid w-full grid-cols-5 mb-8">
-              <TabsTrigger value="capture" className="flex items-center gap-2">
+            <TabsList className="grid w-full grid-cols-5 mb-6 md:mb-8">
+              <TabsTrigger value="capture" className="flex flex-col md:flex-row items-center gap-1 md:gap-2 text-xs md:text-sm px-2">
                 <Camera className="h-4 w-4" />
-                {t("tabs.capture")}
+                <span className="hidden md:inline">{t("tabs.capture")}</span>
               </TabsTrigger>
-              <TabsTrigger value="examples" className="flex items-center gap-2">
+              <TabsTrigger value="examples" className="flex flex-col md:flex-row items-center gap-1 md:gap-2 text-xs md:text-sm px-2">
                 <Utensils className="h-4 w-4" />
-                {t("tabs.meals")}
+                <span className="hidden md:inline">{t("tabs.meals")}</span>
               </TabsTrigger>
-              <TabsTrigger value="history" className="flex items-center gap-2">
+              <TabsTrigger value="history" className="flex flex-col md:flex-row items-center gap-1 md:gap-2 text-xs md:text-sm px-2">
                 <Calendar className="h-4 w-4" />
-                {t("tabs.history")}
+                <span className="hidden md:inline">{t("tabs.history")}</span>
               </TabsTrigger>
-              <TabsTrigger value="info" className="flex items-center gap-2">
+              <TabsTrigger value="info" className="flex flex-col md:flex-row items-center gap-1 md:gap-2 text-xs md:text-sm px-2">
                 <Info className="h-4 w-4" />
-                {t("tabs.info")}
+                <span className="hidden md:inline">{t("tabs.info")}</span>
               </TabsTrigger>
-              <TabsTrigger value="settings" className="flex items-center gap-2">
+              <TabsTrigger value="settings" className="flex flex-col md:flex-row items-center gap-1 md:gap-2 text-xs md:text-sm px-2">
                 <Settings className="h-4 w-4" />
-                {t("tabs.settings")}
+                <span className="hidden md:inline">{t("tabs.settings")}</span>
               </TabsTrigger>
             </TabsList>
 
