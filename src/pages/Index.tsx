@@ -420,6 +420,15 @@ const Index = () => {
             </TabsContent>
           </Tabs>
         )}
+
+        {/* Footer */}
+        {!showCamera && currentResults.length === 0 && (
+          <footer className="mt-12 pt-6 pb-4 text-center border-t border-border/50">
+            <p className="text-sm text-muted-foreground">
+              CarbSmart by <span className="font-semibold text-foreground">TidalDev</span>
+            </p>
+          </footer>
+        )}
       </div>
     </div>
   );
