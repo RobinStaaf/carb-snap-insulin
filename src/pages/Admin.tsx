@@ -531,52 +531,54 @@ const Admin = () => {
                           ? new Date(user.last_login).toLocaleString()
                           : "Never"}
                       </TableCell>
-                      <TableCell className="text-right space-x-2">
-                        {user.status === 'pending' && (
-                          <>
+                      <TableCell className="text-right">
+                        <div className="flex justify-end gap-2">
+                          {user.status === 'pending' && (
+                            <>
+                              <Button
+                                variant="default"
+                                size="sm"
+                                onClick={() => handleApproveUser(user.id)}
+                                className="w-24"
+                              >
+                                <Check className="h-4 w-4 mr-1" />
+                                {t("admin.approve")}
+                              </Button>
+                              <Button
+                                variant="destructive"
+                                size="sm"
+                                onClick={() => handleDeclineUser(user.id)}
+                                className="w-24"
+                              >
+                                <X className="h-4 w-4 mr-1" />
+                                {t("admin.decline")}
+                              </Button>
+                            </>
+                          )}
+                          {user.status === 'approved' && (
                             <Button
-                              variant="default"
+                              variant="outline"
                               size="sm"
-                              onClick={() => handleApproveUser(user.id)}
-                              className="w-24"
+                              onClick={() => handleToggleAdmin(user.id, role === 'admin')}
                             >
-                              <Check className="h-4 w-4 mr-1" />
-                              {t("admin.approve")}
+                              {role === 'admin' ? t("admin.removeAdmin") : t("admin.makeAdmin")}
                             </Button>
-                            <Button
-                              variant="destructive"
-                              size="sm"
-                              onClick={() => handleDeclineUser(user.id)}
-                              className="w-24"
-                            >
-                              <X className="h-4 w-4 mr-1" />
-                              {t("admin.decline")}
-                            </Button>
-                          </>
-                        )}
-                        {user.status === 'approved' && (
+                          )}
                           <Button
                             variant="outline"
                             size="sm"
-                            onClick={() => handleToggleAdmin(user.id, role === 'admin')}
+                            onClick={() => handleSendResetEmail(user.email)}
                           >
-                            {role === 'admin' ? t("admin.removeAdmin") : t("admin.makeAdmin")}
+                            <Mail className="h-4 w-4" />
                           </Button>
-                        )}
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => handleSendResetEmail(user.email)}
-                        >
-                          <Mail className="h-4 w-4" />
-                        </Button>
-                        <Button
-                          variant="destructive"
-                          size="sm"
-                          onClick={() => setDeleteUserId(user.id)}
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
+                          <Button
+                            variant="destructive"
+                            size="sm"
+                            onClick={() => setDeleteUserId(user.id)}
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
                       </TableCell>
                     </TableRow>
                   );
