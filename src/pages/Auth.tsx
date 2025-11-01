@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -20,6 +20,9 @@ const Auth = () => {
   const [password, setPassword] = useState("");
   const [showForgotPassword, setShowForgotPassword] = useState(false);
   const [resetEmail, setResetEmail] = useState("");
+  const [showResetPassword, setShowResetPassword] = useState(false);
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
 
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -124,6 +127,16 @@ const Auth = () => {
     }
   };
 
+  useEffect(() => {
+    // Check if this is a password recovery flow
+    const hashParams = new URLSearchParams(window.location.hash.substring(1));
+    const type = hashParams.get('type');
+    
+    if (type === 'recovery') {
+      setShowResetPassword(true);
+    }
+  }, []);
+
   const handleForgotPassword = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
@@ -141,6 +154,57 @@ const Auth = () => {
       });
       setShowForgotPassword(false);
       setResetEmail("");
+    } catch (error: any) {
+      toast({
+        variant: "destructive",
+        title: t("app.error"),
+        description: error.message,
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleResetPassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (newPassword !== confirmPassword) {
+      toast({
+        variant: "destructive",
+        title: t("app.error"),
+        description: "Passwords do not match",
+      });
+      return;
+    }
+
+    if (newPassword.length < 6) {
+      toast({
+        variant: "destructive",
+        title: t("app.error"),
+        description: "Password must be at least 6 characters",
+      });
+      return;
+    }
+
+    setIsLoading(true);
+
+    try {
+      const { error } = await supabase.auth.updateUser({
+        password: newPassword,
+      });
+
+      if (error) throw error;
+
+      toast({
+        title: "Password Updated",
+        description: "Your password has been successfully updated",
+      });
+
+      // Clear the hash and redirect to sign in
+      window.location.hash = '';
+      setShowResetPassword(false);
+      setNewPassword("");
+      setConfirmPassword("");
     } catch (error: any) {
       toast({
         variant: "destructive",
@@ -189,111 +253,144 @@ const Auth = () => {
           <CardDescription>{t("auth.welcomeDesc")}</CardDescription>
         </CardHeader>
         <CardContent>
-          <Tabs defaultValue="signin" className="w-full">
-            <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="signin">{t("auth.signIn")}</TabsTrigger>
-              <TabsTrigger value="admin">{t("auth.admin")}</TabsTrigger>
-            </TabsList>
-            
-            <TabsContent value="signin">
-              <form onSubmit={handleSignIn} className="space-y-4">
+          {showResetPassword ? (
+            <div>
+              <h3 className="text-lg font-semibold mb-4">Set New Password</h3>
+              <form onSubmit={handleResetPassword} className="space-y-4">
                 <div className="space-y-2">
                   <Input
-                    type="email"
-                    placeholder={t("auth.email")}
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
+                    type="password"
+                    placeholder="New Password"
+                    value={newPassword}
+                    onChange={(e) => setNewPassword(e.target.value)}
                     required
+                    minLength={6}
                   />
                 </div>
                 <div className="space-y-2">
                   <Input
                     type="password"
-                    placeholder={t("auth.password")}
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="Confirm New Password"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
                     required
+                    minLength={6}
                   />
-                  <Button
-                    type="button"
-                    variant="link"
-                    className="p-0 h-auto text-sm"
-                    onClick={() => setShowForgotPassword(true)}
-                  >
-                    {t("auth.forgotPassword")}
-                  </Button>
                 </div>
                 <Button type="submit" className="w-full" disabled={isLoading}>
-                  {isLoading ? t("auth.loading") : t("auth.signIn")}
+                  {isLoading ? t("auth.loading") : "Update Password"}
                 </Button>
-              </form>
-            </TabsContent>
-            
-            <TabsContent value="admin">
-              <form onSubmit={handleAdminSignIn} className="space-y-4">
-                <div className="space-y-2">
-                  <Input
-                    type="email"
-                    placeholder={t("auth.email")}
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    required
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Input
-                    type="password"
-                    placeholder={t("auth.password")}
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    required
-                  />
-                  <Button
-                    type="button"
-                    variant="link"
-                    className="p-0 h-auto text-sm"
-                    onClick={() => setShowForgotPassword(true)}
-                  >
-                    {t("auth.forgotPassword")}
-                  </Button>
-                </div>
-                <Button type="submit" className="w-full" disabled={isLoading}>
-                  {isLoading ? t("auth.loading") : t("auth.adminSignIn")}
-                </Button>
-              </form>
-            </TabsContent>
-          </Tabs>
-
-          {showForgotPassword && (
-            <div className="mt-4 p-6 bg-muted rounded-lg">
-              <h3 className="text-lg font-semibold mb-4">{t("auth.resetPassword")}</h3>
-              <form onSubmit={handleForgotPassword} className="space-y-4">
-                <div className="space-y-2">
-                  <Input
-                    type="email"
-                    placeholder={t("auth.email")}
-                    value={resetEmail}
-                    onChange={(e) => setResetEmail(e.target.value)}
-                    required
-                  />
-                </div>
-                <div className="flex gap-2">
-                  <Button type="submit" disabled={isLoading} className="flex-1">
-                    {isLoading ? t("auth.sending") : t("auth.sendResetLink")}
-                  </Button>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={() => {
-                      setShowForgotPassword(false);
-                      setResetEmail("");
-                    }}
-                  >
-                    {t("auth.cancel")}
-                  </Button>
-                </div>
               </form>
             </div>
+          ) : (
+            <>
+              <Tabs defaultValue="signin" className="w-full">
+                <TabsList className="grid w-full grid-cols-2">
+                  <TabsTrigger value="signin">{t("auth.signIn")}</TabsTrigger>
+                  <TabsTrigger value="admin">{t("auth.admin")}</TabsTrigger>
+                </TabsList>
+                
+                <TabsContent value="signin">
+                  <form onSubmit={handleSignIn} className="space-y-4">
+                    <div className="space-y-2">
+                      <Input
+                        type="email"
+                        placeholder={t("auth.email")}
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        required
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Input
+                        type="password"
+                        placeholder={t("auth.password")}
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        required
+                      />
+                      <Button
+                        type="button"
+                        variant="link"
+                        className="p-0 h-auto text-sm"
+                        onClick={() => setShowForgotPassword(true)}
+                      >
+                        {t("auth.forgotPassword")}
+                      </Button>
+                    </div>
+                    <Button type="submit" className="w-full" disabled={isLoading}>
+                      {isLoading ? t("auth.loading") : t("auth.signIn")}
+                    </Button>
+                  </form>
+                </TabsContent>
+                
+                <TabsContent value="admin">
+                  <form onSubmit={handleAdminSignIn} className="space-y-4">
+                    <div className="space-y-2">
+                      <Input
+                        type="email"
+                        placeholder={t("auth.email")}
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        required
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Input
+                        type="password"
+                        placeholder={t("auth.password")}
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        required
+                      />
+                      <Button
+                        type="button"
+                        variant="link"
+                        className="p-0 h-auto text-sm"
+                        onClick={() => setShowForgotPassword(true)}
+                      >
+                        {t("auth.forgotPassword")}
+                      </Button>
+                    </div>
+                    <Button type="submit" className="w-full" disabled={isLoading}>
+                      {isLoading ? t("auth.loading") : t("auth.adminSignIn")}
+                    </Button>
+                  </form>
+                </TabsContent>
+              </Tabs>
+
+              {showForgotPassword && (
+                <div className="mt-4 p-6 bg-muted rounded-lg">
+                  <h3 className="text-lg font-semibold mb-4">{t("auth.resetPassword")}</h3>
+                  <form onSubmit={handleForgotPassword} className="space-y-4">
+                    <div className="space-y-2">
+                      <Input
+                        type="email"
+                        placeholder={t("auth.email")}
+                        value={resetEmail}
+                        onChange={(e) => setResetEmail(e.target.value)}
+                        required
+                      />
+                    </div>
+                    <div className="flex gap-2">
+                      <Button type="submit" disabled={isLoading} className="flex-1">
+                        {isLoading ? t("auth.sending") : t("auth.sendResetLink")}
+                      </Button>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={() => {
+                          setShowForgotPassword(false);
+                          setResetEmail("");
+                        }}
+                      >
+                        {t("auth.cancel")}
+                      </Button>
+                    </div>
+                  </form>
+                </div>
+              )}
+            </>
           )}
         </CardContent>
       </Card>

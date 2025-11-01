@@ -10,7 +10,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { Shield, UserPlus, ArrowLeft, Trash2, Check, X, BarChart3, Search } from "lucide-react";
+import { Shield, UserPlus, ArrowLeft, Trash2, Check, X, BarChart3, Search, Mail } from "lucide-react";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 
 interface Profile {
@@ -292,6 +292,27 @@ const Admin = () => {
     }
   };
 
+  const handleSendResetEmail = async (userEmail: string) => {
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(userEmail, {
+        redirectTo: `${window.location.origin}/auth`,
+      });
+
+      if (error) throw error;
+
+      toast({
+        title: "Reset Email Sent",
+        description: `Password reset email sent to ${userEmail}`,
+      });
+    } catch (error: any) {
+      toast({
+        title: t("app.error"),
+        description: error.message || "Failed to send reset email",
+        variant: "destructive",
+      });
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -542,6 +563,13 @@ const Admin = () => {
                             {role === 'admin' ? t("admin.removeAdmin") : t("admin.makeAdmin")}
                           </Button>
                         )}
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handleSendResetEmail(user.email)}
+                        >
+                          <Mail className="h-4 w-4" />
+                        </Button>
                         <Button
                           variant="destructive"
                           size="sm"
