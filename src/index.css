@@ -115,12 +115,14 @@ All colors MUST be HSL.
     overflow: hidden;
     position: fixed;
     overscroll-behavior: none;
-    -webkit-overflow-scrolling: touch;
   }
 
   #root {
     height: 100%;
     width: 100%;
-    overflow: hidden;
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
   }
 }
