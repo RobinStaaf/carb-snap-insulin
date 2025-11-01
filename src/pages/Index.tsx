@@ -14,6 +14,16 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import CameraCapture from "@/components/CameraCaptureTranslated";
 import ResultsDisplay from "@/components/ResultsDisplayTranslated";
 import DailyHistoryView from "@/components/DailyHistoryViewTranslated";
@@ -44,6 +54,7 @@ const Index = () => {
   const [insulinRatio, setInsulinRatio] = useState(10); // Default 1:10 ratio
   const [comments, setComments] = useState("");
   const [isAdmin, setIsAdmin] = useState(false);
+  const [showLogoutDialog, setShowLogoutDialog] = useState(false);
 
   useEffect(() => {
     // Set up auth state listener
@@ -135,6 +146,7 @@ const Index = () => {
 
   const handleSignOut = async () => {
     await supabase.auth.signOut();
+    setShowLogoutDialog(false);
     navigate("/auth");
   };
 
@@ -266,7 +278,7 @@ const Index = () => {
                     </>
                   )}
                   <div className="h-px bg-border my-1" />
-                  <DropdownMenuItem onClick={handleSignOut}>
+                  <DropdownMenuItem onClick={() => setShowLogoutDialog(true)}>
                     <LogOut className="h-4 w-4 mr-2" />
                     {t("auth.signOut")}
                   </DropdownMenuItem>
@@ -275,6 +287,24 @@ const Index = () => {
             </div>
           </div>
         </div>
+
+        {/* Logout Confirmation Dialog */}
+        <AlertDialog open={showLogoutDialog} onOpenChange={setShowLogoutDialog}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>{t("auth.signOut")}?</AlertDialogTitle>
+              <AlertDialogDescription>
+                Are you sure you want to log out?
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogAction onClick={handleSignOut}>
+                {t("auth.signOut")}
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
 
         {/* Camera View - Full Screen Override */}
         {showCamera && (
