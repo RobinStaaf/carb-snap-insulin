@@ -7,6 +7,8 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/contexts/LanguageContext";
 import SettingsPanel from "@/components/SettingsPanelTranslated";
+import { supabase } from "@/integrations/supabase/client";
+import bcrypt from "bcryptjs";
 
 interface SettingsViewProps {
   insulinRatio: number;
@@ -24,15 +26,33 @@ const SettingsView = ({ insulinRatio, onRatioChange, comments, onCommentsChange 
   const [confirmPin, setConfirmPin] = useState("");
   const [isSettingPin, setIsSettingPin] = useState(false);
   const [showDisclaimer, setShowDisclaimer] = useState(false);
+  const [userId, setUserId] = useState<string | null>(null);
   const { toast } = useToast();
   const { t } = useLanguage();
 
   useEffect(() => {
-    const storedPin = localStorage.getItem(PIN_STORAGE_KEY);
-    setHasPin(!!storedPin);
+    const loadPinData = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+      
+      setUserId(user.id);
+      
+      const { data } = await supabase
+        .from("profiles")
+        .select("parental_pin_hash")
+        .eq("id", user.id)
+        .single();
+      
+      if (data) {
+        setHasPin(!!data.parental_pin_hash);
+      }
+    };
+    loadPinData();
   }, []);
 
-  const handleSetPin = () => {
+  const handleSetPin = async () => {
+    if (!userId) return;
+    
     if (pin.length !== 4 || !/^\d{4}$/.test(pin)) {
       toast({
         title: t("settings.invalidPin"),
@@ -44,14 +64,20 @@ const SettingsView = ({ insulinRatio, onRatioChange, comments, onCommentsChange 
 
     if (pin !== confirmPin) {
       toast({
-        title: t("settings.pinMismatch"),
-        description: t("settings.pinMismatchDesc"),
+        title: t("settings.pinsNoMatch"),
+        description: t("settings.pinsNoMatchDesc"),
         variant: "destructive",
       });
       return;
     }
 
-    localStorage.setItem(PIN_STORAGE_KEY, pin);
+    const hashedPin = await bcrypt.hash(pin, 10);
+    
+    await supabase
+      .from("profiles")
+      .update({ parental_pin_hash: hashedPin })
+      .eq("id", userId);
+
     setHasPin(true);
     setIsUnlocked(true);
     setIsSettingPin(false);
@@ -63,10 +89,20 @@ const SettingsView = ({ insulinRatio, onRatioChange, comments, onCommentsChange 
     });
   };
 
-  const handleVerifyPin = () => {
-    const storedPin = localStorage.getItem(PIN_STORAGE_KEY);
+  const handleVerifyPin = async () => {
+    if (!userId) return;
     
-    if (pin === storedPin) {
+    const { data } = await supabase
+      .from("profiles")
+      .select("parental_pin_hash")
+      .eq("id", userId)
+      .single();
+    
+    if (!data || !data.parental_pin_hash) return;
+
+    const isValid = await bcrypt.compare(pin, data.parental_pin_hash);
+    
+    if (isValid) {
       setIsUnlocked(true);
       setPin("");
       toast({

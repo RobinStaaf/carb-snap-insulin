@@ -51,10 +51,11 @@ const Index = () => {
   const [showCamera, setShowCamera] = useState(false);
   const [currentResults, setCurrentResults] = useState<CalculationResult[]>([]);
   const [history, setHistory] = useState<CalculationResult[]>([]);
-  const [insulinRatio, setInsulinRatio] = useState(10); // Default 1:10 ratio
+  const [insulinRatio, setInsulinRatio] = useState(10);
   const [comments, setComments] = useState("");
   const [isAdmin, setIsAdmin] = useState(false);
   const [showLogoutDialog, setShowLogoutDialog] = useState(false);
+  const [profileLoaded, setProfileLoaded] = useState(false);
 
   useEffect(() => {
     // Set up auth state listener
@@ -99,6 +100,29 @@ const Index = () => {
       };
       trackAppStart();
 
+      // Load user profile settings
+      const loadProfile = async () => {
+        try {
+          const { data, error } = await supabase
+            .from("profiles")
+            .select("insulin_ratio, comments, show_start_page")
+            .eq("id", user.id)
+            .single();
+
+          if (error) throw error;
+
+          if (data) {
+            setInsulinRatio(Number(data.insulin_ratio) || 10);
+            setComments(data.comments || "");
+            setShowStartPage(data.show_start_page);
+            setProfileLoaded(true);
+          }
+        } catch (error) {
+          console.error("Error loading profile:", error);
+          setProfileLoaded(true);
+        }
+      };
+
       // Load meal history from database
       const loadHistory = async () => {
         try {
@@ -125,6 +149,8 @@ const Index = () => {
           console.error("Error loading history:", error);
         }
       };
+      
+      loadProfile();
       loadHistory();
     }
   }, [user, isLoading, navigate]);
@@ -162,8 +188,63 @@ const Index = () => {
     return null;
   }
 
-  if (showStartPage) {
-    return <StartPage onStart={() => setShowStartPage(false)} />;
+  const handleStartPageComplete = async () => {
+    try {
+      await supabase
+        .from("profiles")
+        .update({ show_start_page: false })
+        .eq("id", user.id);
+      setShowStartPage(false);
+    } catch (error) {
+      console.error("Error updating start page status:", error);
+      setShowStartPage(false);
+    }
+  };
+
+  const handleInsulinRatioChange = async (ratio: number) => {
+    setInsulinRatio(ratio);
+    try {
+      await supabase
+        .from("profiles")
+        .update({ insulin_ratio: ratio })
+        .eq("id", user!.id);
+    } catch (error) {
+      console.error("Error saving insulin ratio:", error);
+      toast({
+        title: t("app.error"),
+        description: "Failed to save insulin ratio",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleCommentsChange = async (newComments: string) => {
+    setComments(newComments);
+    try {
+      await supabase
+        .from("profiles")
+        .update({ comments: newComments })
+        .eq("id", user!.id);
+    } catch (error) {
+      console.error("Error saving comments:", error);
+      toast({
+        title: t("app.error"),
+        description: "Failed to save comments",
+        variant: "destructive",
+      });
+    }
+  };
+
+  if (showStartPage && profileLoaded) {
+    return <StartPage onStart={handleStartPageComplete} />;
+  }
+
+  if (!profileLoaded) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-background to-secondary/30 flex items-center justify-center">
+        <p className="text-muted-foreground">{t("auth.loading")}</p>
+      </div>
+    );
   }
 
   const handlePhotoCapture = async (imageDataUrl: string) => {
@@ -443,9 +524,9 @@ const Index = () => {
             <TabsContent value="settings">
               <SettingsView
                 insulinRatio={insulinRatio}
-                onRatioChange={setInsulinRatio}
+                onRatioChange={handleInsulinRatioChange}
                 comments={comments}
-                onCommentsChange={setComments}
+                onCommentsChange={handleCommentsChange}
               />
             </TabsContent>
           </Tabs>

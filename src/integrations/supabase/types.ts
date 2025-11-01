@@ -70,33 +70,57 @@ export type Database = {
       }
       profiles: {
         Row: {
+          comments: string
           created_at: string | null
+          disclaimer_accepted: boolean
           email: string
           full_name: string | null
           id: string
+          insulin_ratio: number
           invited_by: string | null
           last_login: string | null
           login_count: number
+          parental_pin_hash: string | null
+          pin_failed_attempts: number
+          pin_last_unlock: number | null
+          pin_locked_until: number | null
+          show_start_page: boolean
           status: Database["public"]["Enums"]["user_status"]
         }
         Insert: {
+          comments?: string
           created_at?: string | null
+          disclaimer_accepted?: boolean
           email: string
           full_name?: string | null
           id: string
+          insulin_ratio?: number
           invited_by?: string | null
           last_login?: string | null
           login_count?: number
+          parental_pin_hash?: string | null
+          pin_failed_attempts?: number
+          pin_last_unlock?: number | null
+          pin_locked_until?: number | null
+          show_start_page?: boolean
           status?: Database["public"]["Enums"]["user_status"]
         }
         Update: {
+          comments?: string
           created_at?: string | null
+          disclaimer_accepted?: boolean
           email?: string
           full_name?: string | null
           id?: string
+          insulin_ratio?: number
           invited_by?: string | null
           last_login?: string | null
           login_count?: number
+          parental_pin_hash?: string | null
+          pin_failed_attempts?: number
+          pin_last_unlock?: number | null
+          pin_locked_until?: number | null
+          show_start_page?: boolean
           status?: Database["public"]["Enums"]["user_status"]
         }
         Relationships: []

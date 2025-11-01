@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import SettingsPanel from "@/components/SettingsPanel";
 import bcrypt from "bcryptjs";
+import { supabase } from "@/integrations/supabase/client";
 
 interface SettingsViewProps {
   insulinRatio: number;
@@ -34,25 +35,33 @@ const SettingsView = ({ insulinRatio, onRatioChange, comments, onCommentsChange 
   const [isSettingPin, setIsSettingPin] = useState(false);
   const [isLocked, setIsLocked] = useState(false);
   const [lockoutEndsAt, setLockoutEndsAt] = useState<number | null>(null);
+  const [userId, setUserId] = useState<string | null>(null);
   const { toast } = useToast();
 
   useEffect(() => {
-    const storedData = localStorage.getItem(PIN_STORAGE_KEY);
-    if (storedData) {
-      try {
-        const pinData: PinStorage = JSON.parse(storedData);
-        setHasPin(true);
+    const loadPinData = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+      
+      setUserId(user.id);
+      
+      const { data } = await supabase
+        .from("profiles")
+        .select("parental_pin_hash, pin_failed_attempts, pin_locked_until, pin_last_unlock")
+        .eq("id", user.id)
+        .single();
+      
+      if (data) {
+        setHasPin(!!data.parental_pin_hash);
         
         // Check if locked
-        if (pinData.lockedUntil && pinData.lockedUntil > Date.now()) {
+        if (data.pin_locked_until && data.pin_locked_until > Date.now()) {
           setIsLocked(true);
-          setLockoutEndsAt(pinData.lockedUntil);
+          setLockoutEndsAt(data.pin_locked_until);
         }
-      } catch {
-        // Invalid data, treat as no PIN
-        setHasPin(false);
       }
-    }
+    };
+    loadPinData();
   }, []);
 
   // Auto-lock timer
@@ -72,28 +81,30 @@ const SettingsView = ({ insulinRatio, onRatioChange, comments, onCommentsChange 
 
   // Lockout countdown
   useEffect(() => {
-    if (!isLocked || !lockoutEndsAt) return;
+    if (!isLocked || !lockoutEndsAt || !userId) return;
 
-    const interval = setInterval(() => {
+    const interval = setInterval(async () => {
       if (Date.now() >= lockoutEndsAt) {
         setIsLocked(false);
         setLockoutEndsAt(null);
         
-        // Reset failed attempts
-        const storedData = localStorage.getItem(PIN_STORAGE_KEY);
-        if (storedData) {
-          const pinData: PinStorage = JSON.parse(storedData);
-          pinData.failedAttempts = 0;
-          pinData.lockedUntil = null;
-          localStorage.setItem(PIN_STORAGE_KEY, JSON.stringify(pinData));
-        }
+        // Reset failed attempts in database
+        await supabase
+          .from("profiles")
+          .update({ 
+            pin_failed_attempts: 0,
+            pin_locked_until: null 
+          })
+          .eq("id", userId);
       }
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [isLocked, lockoutEndsAt]);
+  }, [isLocked, lockoutEndsAt, userId]);
 
   const handleSetPin = async () => {
+    if (!userId) return;
+    
     if (pin.length !== 4 || !/^\d{4}$/.test(pin)) {
       toast({
         title: "Invalid PIN",
@@ -115,14 +126,16 @@ const SettingsView = ({ insulinRatio, onRatioChange, comments, onCommentsChange 
     // Hash the PIN
     const hashedPin = await bcrypt.hash(pin, 10);
     
-    const pinData: PinStorage = {
-      hashedPin,
-      failedAttempts: 0,
-      lockedUntil: null,
-      lastUnlockTime: Date.now(),
-    };
+    await supabase
+      .from("profiles")
+      .update({ 
+        parental_pin_hash: hashedPin,
+        pin_failed_attempts: 0,
+        pin_locked_until: null,
+        pin_last_unlock: Date.now()
+      })
+      .eq("id", userId);
 
-    localStorage.setItem(PIN_STORAGE_KEY, JSON.stringify(pinData));
     setHasPin(true);
     setIsUnlocked(true);
     setIsSettingPin(false);
@@ -135,15 +148,20 @@ const SettingsView = ({ insulinRatio, onRatioChange, comments, onCommentsChange 
   };
 
   const handleVerifyPin = async () => {
-    const storedData = localStorage.getItem(PIN_STORAGE_KEY);
-    if (!storedData) return;
+    if (!userId) return;
 
     try {
-      const pinData: PinStorage = JSON.parse(storedData);
+      const { data } = await supabase
+        .from("profiles")
+        .select("parental_pin_hash, pin_failed_attempts, pin_locked_until")
+        .eq("id", userId)
+        .single();
+
+      if (!data || !data.parental_pin_hash) return;
 
       // Check if locked
-      if (pinData.lockedUntil && pinData.lockedUntil > Date.now()) {
-        const remainingMinutes = Math.ceil((pinData.lockedUntil - Date.now()) / 60000);
+      if (data.pin_locked_until && data.pin_locked_until > Date.now()) {
+        const remainingMinutes = Math.ceil((data.pin_locked_until - Date.now()) / 60000);
         toast({
           title: "Settings Locked",
           description: `Too many failed attempts. Try again in ${remainingMinutes} minute${remainingMinutes > 1 ? 's' : ''}.`,
@@ -154,14 +172,18 @@ const SettingsView = ({ insulinRatio, onRatioChange, comments, onCommentsChange 
       }
 
       // Verify PIN
-      const isValid = await bcrypt.compare(pin, pinData.hashedPin);
+      const isValid = await bcrypt.compare(pin, data.parental_pin_hash);
       
       if (isValid) {
         // Reset failed attempts and unlock
-        pinData.failedAttempts = 0;
-        pinData.lockedUntil = null;
-        pinData.lastUnlockTime = Date.now();
-        localStorage.setItem(PIN_STORAGE_KEY, JSON.stringify(pinData));
+        await supabase
+          .from("profiles")
+          .update({ 
+            pin_failed_attempts: 0,
+            pin_locked_until: null,
+            pin_last_unlock: Date.now()
+          })
+          .eq("id", userId);
         
         setIsUnlocked(true);
         setIsLocked(false);
@@ -172,12 +194,19 @@ const SettingsView = ({ insulinRatio, onRatioChange, comments, onCommentsChange 
         });
       } else {
         // Increment failed attempts
-        pinData.failedAttempts += 1;
+        const newFailedAttempts = (data.pin_failed_attempts || 0) + 1;
         
-        if (pinData.failedAttempts >= MAX_FAILED_ATTEMPTS) {
+        if (newFailedAttempts >= MAX_FAILED_ATTEMPTS) {
           // Lock the settings
           const lockUntil = Date.now() + LOCKOUT_DURATION_MS;
-          pinData.lockedUntil = lockUntil;
+          await supabase
+            .from("profiles")
+            .update({ 
+              pin_failed_attempts: newFailedAttempts,
+              pin_locked_until: lockUntil
+            })
+            .eq("id", userId);
+          
           setIsLocked(true);
           setLockoutEndsAt(lockUntil);
           
@@ -187,7 +216,12 @@ const SettingsView = ({ insulinRatio, onRatioChange, comments, onCommentsChange 
             variant: "destructive",
           });
         } else {
-          const attemptsRemaining = MAX_FAILED_ATTEMPTS - pinData.failedAttempts;
+          await supabase
+            .from("profiles")
+            .update({ pin_failed_attempts: newFailedAttempts })
+            .eq("id", userId);
+          
+          const attemptsRemaining = MAX_FAILED_ATTEMPTS - newFailedAttempts;
           toast({
             title: "Incorrect PIN",
             description: `${attemptsRemaining} attempt${attemptsRemaining > 1 ? 's' : ''} remaining before lockout`,
@@ -195,7 +229,6 @@ const SettingsView = ({ insulinRatio, onRatioChange, comments, onCommentsChange 
           });
         }
         
-        localStorage.setItem(PIN_STORAGE_KEY, JSON.stringify(pinData));
         setPin("");
       }
     } catch (error) {

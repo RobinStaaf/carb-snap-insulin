@@ -5,6 +5,7 @@ import { useLanguage, Language } from "@/contexts/LanguageContext";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useState, useEffect } from "react";
+import { supabase } from "@/integrations/supabase/client";
 
 interface StartPageProps {
   onStart: () => void;
@@ -14,12 +15,26 @@ const StartPage = ({ onStart }: StartPageProps) => {
   const { language, setLanguage, t } = useLanguage();
   const [showDisclaimer, setShowDisclaimer] = useState(false);
   const [disclaimerAccepted, setDisclaimerAccepted] = useState(false);
+  const [userId, setUserId] = useState<string | null>(null);
 
   useEffect(() => {
-    const accepted = localStorage.getItem("disclaimerAccepted");
-    if (accepted === "true") {
-      setDisclaimerAccepted(true);
-    }
+    const getUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        setUserId(user.id);
+        // Load disclaimer status from database
+        const { data } = await supabase
+          .from("profiles")
+          .select("disclaimer_accepted")
+          .eq("id", user.id)
+          .single();
+        
+        if (data) {
+          setDisclaimerAccepted(data.disclaimer_accepted);
+        }
+      }
+    };
+    getUser();
   }, []);
 
   const handleGetStarted = () => {
@@ -30,8 +45,17 @@ const StartPage = ({ onStart }: StartPageProps) => {
     }
   };
 
-  const handleAcceptDisclaimer = () => {
-    localStorage.setItem("disclaimerAccepted", "true");
+  const handleAcceptDisclaimer = async () => {
+    if (userId) {
+      try {
+        await supabase
+          .from("profiles")
+          .update({ disclaimer_accepted: true })
+          .eq("id", userId);
+      } catch (error) {
+        console.error("Error saving disclaimer acceptance:", error);
+      }
+    }
     setDisclaimerAccepted(true);
     setShowDisclaimer(false);
     onStart();
