@@ -453,6 +453,72 @@ const Admin = () => {
           </Button>
         </div>
 
+        {/* Membership Applications Section - Always visible at top */}
+        <Card className="border-2 border-primary/20">
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <CardTitle className="flex items-center gap-2">
+                <UserPlus className="h-5 w-5" />
+                Membership Applications
+              </CardTitle>
+              <Badge variant={applications.filter(app => app.status === 'pending').length > 0 ? "default" : "secondary"}>
+                {applications.filter(app => app.status === 'pending').length} Pending
+              </Badge>
+            </div>
+          </CardHeader>
+          <CardContent>
+            {applications.filter(app => app.status === 'pending').length > 0 ? (
+              <div className="space-y-4">
+                {applications
+                  .filter(app => app.status === 'pending')
+                  .map((app) => (
+                    <div key={app.id} className="border rounded-lg p-4 space-y-3 bg-muted/30">
+                      <div className="flex items-start justify-between gap-4">
+                        <div className="space-y-2 flex-1">
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <p className="font-medium text-lg">{app.email}</p>
+                            <Badge variant="outline">
+                              {new Date(app.created_at).toLocaleDateString()} at {new Date(app.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                            </Badge>
+                          </div>
+                          <div className="space-y-1">
+                            <p className="text-sm font-medium text-muted-foreground">Application Message:</p>
+                            <p className="text-sm">{app.description}</p>
+                          </div>
+                        </div>
+                        <div className="flex gap-2 shrink-0">
+                          <Button
+                            size="sm"
+                            onClick={() => handleApproveApplication(app.id, app.email)}
+                            disabled={processingAppId === app.id}
+                            className="min-w-24"
+                          >
+                            <Check className="h-4 w-4 mr-1" />
+                            Approve
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="destructive"
+                            onClick={() => handleRejectApplication(app.id)}
+                            disabled={processingAppId === app.id}
+                            className="min-w-24"
+                          >
+                            <X className="h-4 w-4 mr-1" />
+                            Reject
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+              </div>
+            ) : (
+              <div className="text-center py-8 text-muted-foreground">
+                <p className="text-sm">No pending applications</p>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
         {/* Statistics Card */}
         <Card>
           <CardHeader>
@@ -495,55 +561,6 @@ const Admin = () => {
             )}
           </CardContent>
         </Card>
-
-        {/* Membership Applications Card */}
-        {applications.filter(app => app.status === 'pending').length > 0 && (
-          <Card>
-            <CardHeader>
-              <CardTitle>Membership Applications</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {applications
-                  .filter(app => app.status === 'pending')
-                  .map((app) => (
-                    <div key={app.id} className="border rounded-lg p-4 space-y-3">
-                      <div className="flex items-start justify-between">
-                        <div className="space-y-1 flex-1">
-                          <div className="flex items-center gap-2">
-                            <p className="font-medium">{app.email}</p>
-                            <Badge variant="secondary">
-                              {new Date(app.created_at).toLocaleDateString()}
-                            </Badge>
-                          </div>
-                          <p className="text-sm text-muted-foreground">{app.description}</p>
-                        </div>
-                        <div className="flex gap-2">
-                          <Button
-                            size="sm"
-                            onClick={() => handleApproveApplication(app.id, app.email)}
-                            disabled={processingAppId === app.id}
-                          >
-                            <Check className="h-4 w-4 mr-1" />
-                            Approve
-                          </Button>
-                          <Button
-                            size="sm"
-                            variant="destructive"
-                            onClick={() => handleRejectApplication(app.id)}
-                            disabled={processingAppId === app.id}
-                          >
-                            <X className="h-4 w-4 mr-1" />
-                            Reject
-                          </Button>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-              </div>
-            </CardContent>
-          </Card>
-        )}
 
         <Card>
           <CardHeader>
