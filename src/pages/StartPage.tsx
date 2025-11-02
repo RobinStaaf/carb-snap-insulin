@@ -124,11 +124,20 @@ const StartPage = ({ onStart }: StartPageProps) => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-background to-secondary/30 flex items-center justify-center">
-      <div className="container mx-auto px-4 py-8 max-w-md">
-        <div className="text-center space-y-8">
-          {/* Language Selector */}
-          <div className="flex justify-end animate-in fade-in duration-700">
+    <div className="min-h-screen bg-gradient-to-b from-background to-secondary/30 flex items-center justify-center p-4">
+      <div className="container mx-auto max-w-md w-full">
+        <div className="text-center space-y-6">
+          {/* Logo */}
+          <div className="flex justify-center animate-in fade-in zoom-in duration-700">
+            <img
+              src={carbSmartLogo}
+              alt="CarbSmart - Kids & Type 1 Diabetes"
+              className="w-64 h-64 md:w-72 md:h-72 object-contain drop-shadow-2xl"
+            />
+          </div>
+
+          {/* Language Selector - Moved below logo */}
+          <div className="flex justify-center animate-in fade-in duration-700">
             <div className="flex items-center gap-2 bg-background/80 backdrop-blur-sm rounded-lg px-3 py-2 shadow-soft">
               <Globe className="h-4 w-4 text-muted-foreground" />
               <Select value={language} onValueChange={(value) => setLanguage(value as Language)}>
@@ -145,18 +154,9 @@ const StartPage = ({ onStart }: StartPageProps) => {
             </div>
           </div>
 
-          {/* Logo */}
-          <div className="flex justify-center animate-in fade-in zoom-in duration-700">
-            <img
-              src={carbSmartLogo}
-              alt="CarbSmart - Kids & Type 1 Diabetes"
-              className="w-72 h-72 object-contain drop-shadow-2xl"
-            />
-          </div>
-
           {/* Welcome Text */}
           <div className="space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-700 delay-300">
-            <h1 className="text-4xl font-bold text-foreground">
+            <h1 className="text-3xl md:text-4xl font-bold text-foreground">
               {t("start.welcome")}
             </h1>
             <p className="text-lg text-muted-foreground leading-relaxed">
