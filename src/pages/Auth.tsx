@@ -8,8 +8,12 @@ import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { Languages } from "lucide-react";
 import carbsmartLogo from "@/assets/carbsmart-logo.png";
+import { toast as sonnerToast } from "sonner";
 
 const Auth = () => {
   const navigate = useNavigate();
@@ -23,6 +27,10 @@ const Auth = () => {
   const [showResetPassword, setShowResetPassword] = useState(false);
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [showApplicationForm, setShowApplicationForm] = useState(false);
+  const [applicationEmail, setApplicationEmail] = useState("");
+  const [applicationDescription, setApplicationDescription] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -216,6 +224,55 @@ const Auth = () => {
     }
   };
 
+  const handleSubmitApplication = async () => {
+    if (!applicationEmail || !applicationDescription) {
+      sonnerToast.error("Please fill in all fields");
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      // Insert application
+      const { error: insertError } = await supabase
+        .from("membership_applications")
+        .insert({
+          email: applicationEmail,
+          description: applicationDescription,
+        });
+
+      if (insertError) {
+        if (insertError.code === '23505') {
+          sonnerToast.error("An application with this email already exists");
+        } else {
+          throw insertError;
+        }
+        return;
+      }
+
+      // Send confirmation email
+      const { error: emailError } = await supabase.functions.invoke('send-application-email', {
+        body: {
+          email: applicationEmail,
+          type: 'received',
+        },
+      });
+
+      if (emailError) {
+        console.error('Error sending email:', emailError);
+      }
+
+      sonnerToast.success("Application submitted! Check your email for confirmation.");
+      setShowApplicationForm(false);
+      setApplicationEmail("");
+      setApplicationDescription("");
+    } catch (error) {
+      console.error("Error submitting application:", error);
+      sonnerToast.error("Failed to submit application. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-secondary/30 flex items-center justify-center p-4 relative">
       <div className="absolute top-4 right-4">
@@ -390,10 +447,74 @@ const Auth = () => {
                   </form>
                 </div>
               )}
+
+              <div className="mt-6 pt-6 border-t">
+                <p className="text-sm text-center text-muted-foreground mb-3">
+                  Don't have an account yet?
+                </p>
+                <Button
+                  variant="outline"
+                  className="w-full"
+                  onClick={() => setShowApplicationForm(true)}
+                >
+                  Apply for Membership
+                </Button>
+              </div>
             </>
           )}
         </CardContent>
       </Card>
+
+      {/* Application Form Dialog */}
+      <Dialog open={showApplicationForm} onOpenChange={setShowApplicationForm}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle className="text-2xl">Apply for Membership</DialogTitle>
+            <DialogDescription>
+              Fill out the form below to apply for membership. You will receive an email confirmation once submitted.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label htmlFor="app-email">Email</Label>
+              <Input
+                id="app-email"
+                type="email"
+                placeholder="your.email@example.com"
+                value={applicationEmail}
+                onChange={(e) => setApplicationEmail(e.target.value)}
+                disabled={isSubmitting}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="app-description">Why do you want to join?</Label>
+              <Textarea
+                id="app-description"
+                placeholder="Tell us a bit about yourself and why you'd like to become a member..."
+                className="min-h-32"
+                value={applicationDescription}
+                onChange={(e) => setApplicationDescription(e.target.value)}
+                disabled={isSubmitting}
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setShowApplicationForm(false)}
+              disabled={isSubmitting}
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={handleSubmitApplication}
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? "Submitting..." : "Submit Application"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
