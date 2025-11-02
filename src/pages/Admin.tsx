@@ -28,6 +28,14 @@ interface UserRole {
   role: 'admin' | 'user';
 }
 
+interface MembershipApplication {
+  id: string;
+  email: string;
+  description: string;
+  status: 'pending' | 'approved' | 'rejected';
+  created_at: string;
+}
+
 const Admin = () => {
   const [isAdmin, setIsAdmin] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -45,6 +53,8 @@ const Admin = () => {
   const [filterName, setFilterName] = useState("");
   const [totalAppStarts, setTotalAppStarts] = useState(0);
   const [userGrowthData, setUserGrowthData] = useState<{ date: string; count: number }[]>([]);
+  const [applications, setApplications] = useState<MembershipApplication[]>([]);
+  const [processingAppId, setProcessingAppId] = useState<string | null>(null);
   const navigate = useNavigate();
   const { toast } = useToast();
   const { t } = useLanguage();
@@ -81,11 +91,26 @@ const Admin = () => {
 
       setIsAdmin(true);
       loadUsers();
+      loadApplications();
     } catch (error) {
       console.error("Error checking admin status:", error);
       navigate("/");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const loadApplications = async () => {
+    try {
+      const { data, error } = await supabase
+        .from("membership_applications")
+        .select("*")
+        .order("created_at", { ascending: false });
+
+      if (error) throw error;
+      setApplications((data || []) as MembershipApplication[]);
+    } catch (error) {
+      console.error("Error loading applications:", error);
     }
   };
 
@@ -292,6 +317,88 @@ const Admin = () => {
     }
   };
 
+  const handleApproveApplication = async (applicationId: string, email: string) => {
+    setProcessingAppId(applicationId);
+    try {
+      // Generate temporary password
+      const tempPassword = Math.random().toString(36).slice(-12);
+      
+      // Create user account with admin createUser
+      const { data: { user }, error: createError } = await supabase.auth.admin.createUser({
+        email,
+        password: tempPassword,
+        email_confirm: true,
+      });
+
+      if (createError) throw createError;
+
+      // Update application status
+      const { error: updateError } = await supabase
+        .from("membership_applications")
+        .update({ status: 'approved', reviewed_at: new Date().toISOString() })
+        .eq("id", applicationId);
+
+      if (updateError) throw updateError;
+
+      // Send approval email with password reset link
+      const { data: { user: currentUser } } = await supabase.auth.getUser();
+      const resetLink = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/auth`,
+      });
+
+      await supabase.functions.invoke('send-application-email', {
+        body: {
+          email,
+          type: 'approved',
+          setupLink: `${window.location.origin}/auth?type=recovery`,
+        },
+      });
+
+      toast({
+        title: "Application Approved",
+        description: "User account created and email sent.",
+      });
+
+      loadApplications();
+    } catch (error: any) {
+      console.error("Error approving application:", error);
+      toast({
+        title: "Error",
+        description: error.message || "Failed to approve application",
+        variant: "destructive",
+      });
+    } finally {
+      setProcessingAppId(null);
+    }
+  };
+
+  const handleRejectApplication = async (applicationId: string) => {
+    setProcessingAppId(applicationId);
+    try {
+      const { error } = await supabase
+        .from("membership_applications")
+        .update({ status: 'rejected', reviewed_at: new Date().toISOString() })
+        .eq("id", applicationId);
+
+      if (error) throw error;
+
+      toast({
+        title: "Application Rejected",
+        description: "The application has been rejected.",
+      });
+
+      loadApplications();
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to reject application",
+        variant: "destructive",
+      });
+    } finally {
+      setProcessingAppId(null);
+    }
+  };
+
   const handleSendResetEmail = async (userEmail: string) => {
     try {
       const { error } = await supabase.auth.resetPasswordForEmail(userEmail, {
@@ -388,6 +495,55 @@ const Admin = () => {
             )}
           </CardContent>
         </Card>
+
+        {/* Membership Applications Card */}
+        {applications.filter(app => app.status === 'pending').length > 0 && (
+          <Card>
+            <CardHeader>
+              <CardTitle>Membership Applications</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                {applications
+                  .filter(app => app.status === 'pending')
+                  .map((app) => (
+                    <div key={app.id} className="border rounded-lg p-4 space-y-3">
+                      <div className="flex items-start justify-between">
+                        <div className="space-y-1 flex-1">
+                          <div className="flex items-center gap-2">
+                            <p className="font-medium">{app.email}</p>
+                            <Badge variant="secondary">
+                              {new Date(app.created_at).toLocaleDateString()}
+                            </Badge>
+                          </div>
+                          <p className="text-sm text-muted-foreground">{app.description}</p>
+                        </div>
+                        <div className="flex gap-2">
+                          <Button
+                            size="sm"
+                            onClick={() => handleApproveApplication(app.id, app.email)}
+                            disabled={processingAppId === app.id}
+                          >
+                            <Check className="h-4 w-4 mr-1" />
+                            Approve
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="destructive"
+                            onClick={() => handleRejectApplication(app.id)}
+                            disabled={processingAppId === app.id}
+                          >
+                            <X className="h-4 w-4 mr-1" />
+                            Reject
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
         <Card>
           <CardHeader>

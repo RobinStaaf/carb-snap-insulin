@@ -4,8 +4,12 @@ import carbSmartLogo from "@/assets/carbsmart-logo.png";
 import { useLanguage, Language } from "@/contexts/LanguageContext";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 interface StartPageProps {
   onStart: () => void;
@@ -16,6 +20,10 @@ const StartPage = ({ onStart }: StartPageProps) => {
   const [showDisclaimer, setShowDisclaimer] = useState(false);
   const [disclaimerAccepted, setDisclaimerAccepted] = useState(false);
   const [userId, setUserId] = useState<string | null>(null);
+  const [showApplicationForm, setShowApplicationForm] = useState(false);
+  const [applicationEmail, setApplicationEmail] = useState("");
+  const [applicationDescription, setApplicationDescription] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     const getUser = async () => {
@@ -65,6 +73,56 @@ const StartPage = ({ onStart }: StartPageProps) => {
     setShowDisclaimer(false);
   };
 
+  const handleSubmitApplication = async () => {
+    if (!applicationEmail || !applicationDescription) {
+      toast.error("Please fill in all fields");
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      // Insert application
+      const { error: insertError } = await supabase
+        .from("membership_applications")
+        .insert({
+          email: applicationEmail,
+          description: applicationDescription,
+        });
+
+      if (insertError) {
+        if (insertError.code === '23505') { // Unique constraint violation
+          toast.error("An application with this email already exists");
+        } else {
+          throw insertError;
+        }
+        return;
+      }
+
+      // Send confirmation email
+      const { error: emailError } = await supabase.functions.invoke('send-application-email', {
+        body: {
+          email: applicationEmail,
+          type: 'received',
+        },
+      });
+
+      if (emailError) {
+        console.error('Error sending email:', emailError);
+        // Don't fail the application if email fails
+      }
+
+      toast.success("Application submitted! Check your email for confirmation.");
+      setShowApplicationForm(false);
+      setApplicationEmail("");
+      setApplicationDescription("");
+    } catch (error) {
+      console.error("Error submitting application:", error);
+      toast.error("Failed to submit application. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-secondary/30 flex items-center justify-center">
       <div className="container mx-auto px-4 py-8 max-w-md">
@@ -106,8 +164,8 @@ const StartPage = ({ onStart }: StartPageProps) => {
             </p>
           </div>
 
-          {/* Start Button */}
-          <div className="animate-in fade-in slide-in-from-bottom-4 duration-700 delay-500">
+          {/* Buttons */}
+          <div className="space-y-3 animate-in fade-in slide-in-from-bottom-4 duration-700 delay-500">
             <Button
               onClick={handleGetStarted}
               size="lg"
@@ -115,6 +173,14 @@ const StartPage = ({ onStart }: StartPageProps) => {
             >
               {t("start.getStarted")}
               <ArrowRight className="ml-2 h-6 w-6" />
+            </Button>
+            <Button
+              onClick={() => setShowApplicationForm(true)}
+              variant="outline"
+              size="lg"
+              className="w-full h-14 text-lg"
+            >
+              Apply for Membership
             </Button>
           </div>
         </div>
@@ -145,6 +211,57 @@ const StartPage = ({ onStart }: StartPageProps) => {
               className="w-full sm:w-auto bg-primary hover:bg-primary/90"
             >
               {t("start.accept")}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Application Form Dialog */}
+      <Dialog open={showApplicationForm} onOpenChange={setShowApplicationForm}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle className="text-2xl">Apply for Membership</DialogTitle>
+            <DialogDescription>
+              Fill out the form below to apply for membership. You will receive an email confirmation once submitted.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label htmlFor="email">Email</Label>
+              <Input
+                id="email"
+                type="email"
+                placeholder="your.email@example.com"
+                value={applicationEmail}
+                onChange={(e) => setApplicationEmail(e.target.value)}
+                disabled={isSubmitting}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="description">Why do you want to join?</Label>
+              <Textarea
+                id="description"
+                placeholder="Tell us a bit about yourself and why you'd like to become a member..."
+                className="min-h-32"
+                value={applicationDescription}
+                onChange={(e) => setApplicationDescription(e.target.value)}
+                disabled={isSubmitting}
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setShowApplicationForm(false)}
+              disabled={isSubmitting}
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={handleSubmitApplication}
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? "Submitting..." : "Submit Application"}
             </Button>
           </DialogFooter>
         </DialogContent>
