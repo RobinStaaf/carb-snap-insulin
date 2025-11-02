@@ -274,31 +274,7 @@ const Auth = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-background to-secondary/30 flex items-center justify-center p-4 relative">
-      <div className="absolute top-4 right-4">
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline" size="sm" className="gap-2">
-              <Languages className="h-4 w-4" />
-              <span>Language</span>
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="bg-background">
-            <DropdownMenuItem onClick={() => setLanguage("en")} className={language === "en" ? "bg-accent" : ""}>
-              🇬🇧 English
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => setLanguage("sv")} className={language === "sv" ? "bg-accent" : ""}>
-              🇸🇪 Svenska
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => setLanguage("fr")} className={language === "fr" ? "bg-accent" : ""}>
-              🇫🇷 Français
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => setLanguage("es")} className={language === "es" ? "bg-accent" : ""}>
-              🇪🇸 Español
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </div>
+    <div className="min-h-screen bg-gradient-to-b from-background to-secondary/30 flex items-center justify-center p-4">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
           <img 
@@ -306,6 +282,33 @@ const Auth = () => {
             alt="CarbSmart" 
             className="h-16 mx-auto mb-4"
           />
+          
+          {/* Language Selector - Moved here for better mobile visibility */}
+          <div className="flex justify-center mb-4">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" size="sm" className="gap-2">
+                  <Languages className="h-4 w-4" />
+                  <span>Language</span>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="center" className="bg-background">
+                <DropdownMenuItem onClick={() => setLanguage("en")} className={language === "en" ? "bg-accent" : ""}>
+                  🇬🇧 English
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setLanguage("sv")} className={language === "sv" ? "bg-accent" : ""}>
+                  🇸🇪 Svenska
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setLanguage("fr")} className={language === "fr" ? "bg-accent" : ""}>
+                  🇫🇷 Français
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setLanguage("es")} className={language === "es" ? "bg-accent" : ""}>
+                  🇪🇸 Español
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+          
           <CardTitle className="text-2xl">{t("auth.welcome")}</CardTitle>
           <CardDescription>{t("auth.welcomeDesc")}</CardDescription>
         </CardHeader>
