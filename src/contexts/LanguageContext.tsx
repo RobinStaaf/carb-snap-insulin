@@ -229,6 +229,35 @@ const translations: Record<Language, Record<string, string>> = {
     "admin.userCanLogin": "User can now log in to the app",
     "admin.userDeclined": "User Declined",
     "admin.userDenied": "User access has been denied",
+    "admin.membershipApplications": "Membership Applications",
+    "admin.pending": "Pending",
+    "admin.noPendingApplications": "No pending applications",
+    "admin.applicationMessage": "Application Message:",
+    "admin.reject": "Reject",
+    
+    // Admin Statistics
+    "admin.statistics": "Statistics",
+    "admin.totalUsers": "Total Users",
+    "admin.appStarts": "App Starts",
+    "admin.newUsers30Days": "New Users (30 days)",
+    "admin.userGrowth": "User Growth (Last 30 Days)",
+    "admin.applicationApproved": "Application Approved",
+    "admin.applicationApprovedDesc": "User account created and email sent.",
+    "admin.applicationRejected": "Application Rejected",
+    "admin.applicationRejectedDesc": "The application has been rejected.",
+    "admin.resetEmailSent": "Reset Email Sent",
+    "admin.resetEmailSentDesc": "Password reset email sent to {email}",
+    
+    // Membership Application
+    "application.title": "Apply for Membership",
+    "application.description": "Fill out the form below to apply for membership. You will receive an email confirmation once submitted.",
+    "application.email": "Email",
+    "application.whyJoin": "Why do you want to join?",
+    "application.whyJoinPlaceholder": "Tell us a bit about yourself and why you'd like to become a member...",
+    "application.cancel": "Cancel",
+    "application.submit": "Submit Application",
+    "application.submitting": "Submitting...",
+    "application.noAccount": "Don't have an account yet?",
     
     // NotFound
     "notFound.title": "404",
@@ -453,6 +482,35 @@ const translations: Record<Language, Record<string, string>> = {
     "admin.userCanLogin": "Användaren kan nu logga in i appen",
     "admin.userDeclined": "Användare nekad",
     "admin.userDenied": "Användaråtkomst har nekats",
+    "admin.membershipApplications": "Medlemsansökningar",
+    "admin.pending": "Väntande",
+    "admin.noPendingApplications": "Inga väntande ansökningar",
+    "admin.applicationMessage": "Ansökningsmeddelande:",
+    "admin.reject": "Avvisa",
+    
+    // Admin Statistics
+    "admin.statistics": "Statistik",
+    "admin.totalUsers": "Totalt antal användare",
+    "admin.appStarts": "App-starter",
+    "admin.newUsers30Days": "Nya användare (30 dagar)",
+    "admin.userGrowth": "Användartillväxt (Senaste 30 dagarna)",
+    "admin.applicationApproved": "Ansökan godkänd",
+    "admin.applicationApprovedDesc": "Användarkonto skapat och e-post skickat.",
+    "admin.applicationRejected": "Ansökan avvisad",
+    "admin.applicationRejectedDesc": "Ansökan har avvisats.",
+    "admin.resetEmailSent": "Återställningsmail skickat",
+    "admin.resetEmailSentDesc": "Återställningsmail för lösenord skickat till {email}",
+    
+    // Membership Application
+    "application.title": "Ansök om medlemskap",
+    "application.description": "Fyll i formuläret nedan för att ansöka om medlemskap. Du kommer att få en e-postbekräftelse när det är inskickat.",
+    "application.email": "E-post",
+    "application.whyJoin": "Varför vill du gå med?",
+    "application.whyJoinPlaceholder": "Berätta lite om dig själv och varför du vill bli medlem...",
+    "application.cancel": "Avbryt",
+    "application.submit": "Skicka ansökan",
+    "application.submitting": "Skickar...",
+    "application.noAccount": "Har du inget konto ännu?",
     
     // NotFound
     "notFound.title": "404",
@@ -677,6 +735,35 @@ const translations: Record<Language, Record<string, string>> = {
     "admin.userCanLogin": "L'utilisateur peut maintenant se connecter à l'application",
     "admin.userDeclined": "Utilisateur refusé",
     "admin.userDenied": "L'accès utilisateur a été refusé",
+    "admin.membershipApplications": "Demandes d'adhésion",
+    "admin.pending": "En attente",
+    "admin.noPendingApplications": "Aucune demande en attente",
+    "admin.applicationMessage": "Message de la demande:",
+    "admin.reject": "Rejeter",
+    
+    // Admin Statistics
+    "admin.statistics": "Statistiques",
+    "admin.totalUsers": "Total des utilisateurs",
+    "admin.appStarts": "Démarrages de l'application",
+    "admin.newUsers30Days": "Nouveaux utilisateurs (30 jours)",
+    "admin.userGrowth": "Croissance des utilisateurs (30 derniers jours)",
+    "admin.applicationApproved": "Demande approuvée",
+    "admin.applicationApprovedDesc": "Compte utilisateur créé et e-mail envoyé.",
+    "admin.applicationRejected": "Demande rejetée",
+    "admin.applicationRejectedDesc": "La demande a été rejetée.",
+    "admin.resetEmailSent": "E-mail de réinitialisation envoyé",
+    "admin.resetEmailSentDesc": "E-mail de réinitialisation du mot de passe envoyé à {email}",
+    
+    // Membership Application
+    "application.title": "Postuler pour l'adhésion",
+    "application.description": "Remplissez le formulaire ci-dessous pour postuler. Vous recevrez un e-mail de confirmation une fois soumis.",
+    "application.email": "E-mail",
+    "application.whyJoin": "Pourquoi voulez-vous rejoindre?",
+    "application.whyJoinPlaceholder": "Parlez-nous un peu de vous et pourquoi vous souhaitez devenir membre...",
+    "application.cancel": "Annuler",
+    "application.submit": "Soumettre la demande",
+    "application.submitting": "Envoi...",
+    "application.noAccount": "Vous n'avez pas encore de compte?",
     
     // NotFound
     "notFound.title": "404",
@@ -901,6 +988,35 @@ const translations: Record<Language, Record<string, string>> = {
     "admin.userCanLogin": "El usuario ahora puede iniciar sesión en la aplicación",
     "admin.userDeclined": "Usuario rechazado",
     "admin.userDenied": "El acceso del usuario ha sido denegado",
+    "admin.membershipApplications": "Solicitudes de membresía",
+    "admin.pending": "Pendiente",
+    "admin.noPendingApplications": "No hay solicitudes pendientes",
+    "admin.applicationMessage": "Mensaje de solicitud:",
+    "admin.reject": "Rechazar",
+    
+    // Admin Statistics
+    "admin.statistics": "Estadísticas",
+    "admin.totalUsers": "Total de usuarios",
+    "admin.appStarts": "Inicios de aplicación",
+    "admin.newUsers30Days": "Nuevos usuarios (30 días)",
+    "admin.userGrowth": "Crecimiento de usuarios (Últimos 30 días)",
+    "admin.applicationApproved": "Solicitud aprobada",
+    "admin.applicationApprovedDesc": "Cuenta de usuario creada y correo enviado.",
+    "admin.applicationRejected": "Solicitud rechazada",
+    "admin.applicationRejectedDesc": "La solicitud ha sido rechazada.",
+    "admin.resetEmailSent": "Correo de restablecimiento enviado",
+    "admin.resetEmailSentDesc": "Correo de restablecimiento de contraseña enviado a {email}",
+    
+    // Membership Application
+    "application.title": "Solicitar membresía",
+    "application.description": "Complete el formulario a continuación para solicitar membresía. Recibirá un correo de confirmación una vez enviado.",
+    "application.email": "Correo electrónico",
+    "application.whyJoin": "¿Por qué quieres unirte?",
+    "application.whyJoinPlaceholder": "Cuéntanos un poco sobre ti y por qué te gustaría ser miembro...",
+    "application.cancel": "Cancelar",
+    "application.submit": "Enviar solicitud",
+    "application.submitting": "Enviando...",
+    "application.noAccount": "¿Aún no tienes una cuenta?",
     
     // NotFound
     "notFound.title": "404",

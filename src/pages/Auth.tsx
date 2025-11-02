@@ -450,14 +450,14 @@ const Auth = () => {
 
               <div className="mt-6 pt-6 border-t">
                 <p className="text-sm text-center text-muted-foreground mb-3">
-                  Don't have an account yet?
+                  {t("application.noAccount")}
                 </p>
                 <Button
                   variant="outline"
                   className="w-full"
                   onClick={() => setShowApplicationForm(true)}
                 >
-                  Apply for Membership
+                  {t("application.title")}
                 </Button>
               </div>
             </>
@@ -469,14 +469,14 @@ const Auth = () => {
       <Dialog open={showApplicationForm} onOpenChange={setShowApplicationForm}>
         <DialogContent className="max-w-lg">
           <DialogHeader>
-            <DialogTitle className="text-2xl">Apply for Membership</DialogTitle>
+            <DialogTitle className="text-2xl">{t("application.title")}</DialogTitle>
             <DialogDescription>
-              Fill out the form below to apply for membership. You will receive an email confirmation once submitted.
+              {t("application.description")}
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-4">
             <div className="space-y-2">
-              <Label htmlFor="app-email">Email</Label>
+              <Label htmlFor="app-email">{t("application.email")}</Label>
               <Input
                 id="app-email"
                 type="email"
@@ -487,10 +487,10 @@ const Auth = () => {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="app-description">Why do you want to join?</Label>
+              <Label htmlFor="app-description">{t("application.whyJoin")}</Label>
               <Textarea
                 id="app-description"
-                placeholder="Tell us a bit about yourself and why you'd like to become a member..."
+                placeholder={t("application.whyJoinPlaceholder")}
                 className="min-h-32"
                 value={applicationDescription}
                 onChange={(e) => setApplicationDescription(e.target.value)}
@@ -504,13 +504,13 @@ const Auth = () => {
               onClick={() => setShowApplicationForm(false)}
               disabled={isSubmitting}
             >
-              Cancel
+              {t("application.cancel")}
             </Button>
             <Button
               onClick={handleSubmitApplication}
               disabled={isSubmitting}
             >
-              {isSubmitting ? "Submitting..." : "Submit Application"}
+              {isSubmitting ? t("application.submitting") : t("application.submit")}
             </Button>
           </DialogFooter>
         </DialogContent>

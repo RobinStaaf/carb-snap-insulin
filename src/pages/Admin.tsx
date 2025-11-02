@@ -355,8 +355,8 @@ const Admin = () => {
       });
 
       toast({
-        title: "Application Approved",
-        description: "User account created and email sent.",
+        title: t("admin.applicationApproved"),
+        description: t("admin.applicationApprovedDesc"),
       });
 
       loadApplications();
@@ -383,8 +383,8 @@ const Admin = () => {
       if (error) throw error;
 
       toast({
-        title: "Application Rejected",
-        description: "The application has been rejected.",
+        title: t("admin.applicationRejected"),
+        description: t("admin.applicationRejectedDesc"),
       });
 
       loadApplications();
@@ -408,8 +408,8 @@ const Admin = () => {
       if (error) throw error;
 
       toast({
-        title: "Reset Email Sent",
-        description: `Password reset email sent to ${userEmail}`,
+        title: t("admin.resetEmailSent"),
+        description: t("admin.resetEmailSentDesc", { email: userEmail }),
       });
     } catch (error: any) {
       toast({
@@ -459,10 +459,10 @@ const Admin = () => {
             <div className="flex items-center justify-between">
               <CardTitle className="flex items-center gap-2">
                 <UserPlus className="h-5 w-5" />
-                Membership Applications
+                {t("admin.membershipApplications")}
               </CardTitle>
               <Badge variant={applications.filter(app => app.status === 'pending').length > 0 ? "default" : "secondary"}>
-                {applications.filter(app => app.status === 'pending').length} Pending
+                {applications.filter(app => app.status === 'pending').length} {t("admin.pending")}
               </Badge>
             </div>
           </CardHeader>
@@ -482,7 +482,7 @@ const Admin = () => {
                             </Badge>
                           </div>
                           <div className="space-y-1">
-                            <p className="text-sm font-medium text-muted-foreground">Application Message:</p>
+                            <p className="text-sm font-medium text-muted-foreground">{t("admin.applicationMessage")}</p>
                             <p className="text-sm">{app.description}</p>
                           </div>
                         </div>
@@ -494,7 +494,7 @@ const Admin = () => {
                             className="min-w-24"
                           >
                             <Check className="h-4 w-4 mr-1" />
-                            Approve
+                            {t("admin.approve")}
                           </Button>
                           <Button
                             size="sm"
@@ -504,7 +504,7 @@ const Admin = () => {
                             className="min-w-24"
                           >
                             <X className="h-4 w-4 mr-1" />
-                            Reject
+                            {t("admin.reject")}
                           </Button>
                         </div>
                       </div>
@@ -513,7 +513,7 @@ const Admin = () => {
               </div>
             ) : (
               <div className="text-center py-8 text-muted-foreground">
-                <p className="text-sm">No pending applications</p>
+                <p className="text-sm">{t("admin.noPendingApplications")}</p>
               </div>
             )}
           </CardContent>
@@ -524,21 +524,21 @@ const Admin = () => {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <BarChart3 className="h-5 w-5" />
-              Statistics
+              {t("admin.statistics")}
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="space-y-1">
-                <p className="text-sm text-muted-foreground">Total Users</p>
+                <p className="text-sm text-muted-foreground">{t("admin.totalUsers")}</p>
                 <p className="text-2xl font-bold">{users.length}</p>
               </div>
               <div className="space-y-1">
-                <p className="text-sm text-muted-foreground">App Starts</p>
+                <p className="text-sm text-muted-foreground">{t("admin.appStarts")}</p>
                 <p className="text-2xl font-bold">{totalAppStarts}</p>
               </div>
               <div className="space-y-1">
-                <p className="text-sm text-muted-foreground">New Users (30 days)</p>
+                <p className="text-sm text-muted-foreground">{t("admin.newUsers30Days")}</p>
                 <p className="text-2xl font-bold">
                   {userGrowthData.reduce((sum, item) => sum + item.count, 0)}
                 </p>
@@ -546,7 +546,7 @@ const Admin = () => {
             </div>
             {userGrowthData.length > 0 && (
               <div className="mt-4">
-                <p className="text-sm font-medium mb-2">User Growth (Last 30 Days)</p>
+                <p className="text-sm font-medium mb-2">{t("admin.userGrowth")}</p>
                 <div className="flex gap-1 h-24 items-end">
                   {userGrowthData.map((item, index) => (
                     <div

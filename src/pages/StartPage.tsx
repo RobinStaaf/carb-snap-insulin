@@ -180,7 +180,7 @@ const StartPage = ({ onStart }: StartPageProps) => {
               size="lg"
               className="w-full h-14 text-lg"
             >
-              Apply for Membership
+              {t("application.title")}
             </Button>
           </div>
         </div>
@@ -220,14 +220,14 @@ const StartPage = ({ onStart }: StartPageProps) => {
       <Dialog open={showApplicationForm} onOpenChange={setShowApplicationForm}>
         <DialogContent className="max-w-lg">
           <DialogHeader>
-            <DialogTitle className="text-2xl">Apply for Membership</DialogTitle>
+            <DialogTitle className="text-2xl">{t("application.title")}</DialogTitle>
             <DialogDescription>
-              Fill out the form below to apply for membership. You will receive an email confirmation once submitted.
+              {t("application.description")}
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-4">
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email">{t("application.email")}</Label>
               <Input
                 id="email"
                 type="email"
@@ -238,10 +238,10 @@ const StartPage = ({ onStart }: StartPageProps) => {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="description">Why do you want to join?</Label>
+              <Label htmlFor="description">{t("application.whyJoin")}</Label>
               <Textarea
                 id="description"
-                placeholder="Tell us a bit about yourself and why you'd like to become a member..."
+                placeholder={t("application.whyJoinPlaceholder")}
                 className="min-h-32"
                 value={applicationDescription}
                 onChange={(e) => setApplicationDescription(e.target.value)}
@@ -255,13 +255,13 @@ const StartPage = ({ onStart }: StartPageProps) => {
               onClick={() => setShowApplicationForm(false)}
               disabled={isSubmitting}
             >
-              Cancel
+              {t("application.cancel")}
             </Button>
             <Button
               onClick={handleSubmitApplication}
               disabled={isSubmitting}
             >
-              {isSubmitting ? "Submitting..." : "Submit Application"}
+              {isSubmitting ? t("application.submitting") : t("application.submit")}
             </Button>
           </DialogFooter>
         </DialogContent>
