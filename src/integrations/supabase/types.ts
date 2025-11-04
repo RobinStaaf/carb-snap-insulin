@@ -114,6 +114,7 @@ export type Database = {
           pin_failed_attempts: number
           pin_last_unlock: number | null
           pin_locked_until: number | null
+          portion_size: string
           show_start_page: boolean
           status: Database["public"]["Enums"]["user_status"]
         }
@@ -132,6 +133,7 @@ export type Database = {
           pin_failed_attempts?: number
           pin_last_unlock?: number | null
           pin_locked_until?: number | null
+          portion_size?: string
           show_start_page?: boolean
           status?: Database["public"]["Enums"]["user_status"]
         }
@@ -150,6 +152,7 @@ export type Database = {
           pin_failed_attempts?: number
           pin_last_unlock?: number | null
           pin_locked_until?: number | null
+          portion_size?: string
           show_start_page?: boolean
           status?: Database["public"]["Enums"]["user_status"]
         }

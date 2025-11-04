@@ -40,7 +40,7 @@ serve(async (req) => {
 
     console.log("Authenticated user:", user.id);
 
-    const { imageData } = await req.json();
+    const { imageData, portionSize = 'adult' } = await req.json();
     
     // Validate input
     if (!imageData || typeof imageData !== 'string') {
@@ -84,14 +84,14 @@ serve(async (req) => {
         messages: [
           {
             role: "system",
-            content: "You are a nutritionist expert specialized in estimating carbohydrates in food. Analyze food images and provide accurate carbohydrate estimates in grams."
+            content: `You are a nutritionist expert specialized in estimating carbohydrates in food. Analyze food images and provide accurate carbohydrate estimates in grams. Consider that this is for ${portionSize === 'child' ? 'a child portion (smaller serving sizes)' : 'an adult portion (standard serving sizes)'}.`
           },
           {
             role: "user",
             content: [
               {
                 type: "text",
-                text: "Analyze this food image and estimate the total carbohydrates in grams. Consider portion sizes carefully."
+                text: `Analyze this food image and estimate the total carbohydrates in grams. This is ${portionSize === 'child' ? 'a child-sized portion' : 'an adult-sized portion'}. Consider portion sizes carefully and adjust estimates accordingly.`
               },
               {
                 type: "image_url",

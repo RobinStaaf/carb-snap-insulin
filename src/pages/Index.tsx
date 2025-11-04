@@ -52,6 +52,7 @@ const Index = () => {
   const [currentResults, setCurrentResults] = useState<CalculationResult[]>([]);
   const [history, setHistory] = useState<CalculationResult[]>([]);
   const [insulinRatio, setInsulinRatio] = useState(10);
+  const [portionSize, setPortionSize] = useState<string>("adult");
   const [comments, setComments] = useState("");
   const [isAdmin, setIsAdmin] = useState(false);
   const [showLogoutDialog, setShowLogoutDialog] = useState(false);
@@ -105,7 +106,7 @@ const Index = () => {
         try {
           const { data, error } = await supabase
             .from("profiles")
-            .select("insulin_ratio, comments, show_start_page")
+            .select("insulin_ratio, portion_size, comments, show_start_page")
             .eq("id", user.id)
             .single();
 
@@ -113,6 +114,7 @@ const Index = () => {
 
           if (data) {
             setInsulinRatio(Number(data.insulin_ratio) || 10);
+            setPortionSize(data.portion_size || "adult");
             setComments(data.comments || "");
             setShowStartPage(data.show_start_page);
             setProfileLoaded(true);
@@ -218,6 +220,23 @@ const Index = () => {
     }
   };
 
+  const handlePortionSizeChange = async (size: string) => {
+    setPortionSize(size);
+    try {
+      await supabase
+        .from("profiles")
+        .update({ portion_size: size })
+        .eq("id", user!.id);
+    } catch (error) {
+      console.error("Error saving portion size:", error);
+      toast({
+        title: t("app.error"),
+        description: "Failed to save portion size",
+        variant: "destructive",
+      });
+    }
+  };
+
   const handleCommentsChange = async (newComments: string) => {
     setComments(newComments);
     try {
@@ -255,7 +274,7 @@ const Index = () => {
       });
 
       const { data, error } = await supabase.functions.invoke("analyze-food", {
-        body: { imageData: imageDataUrl },
+        body: { imageData: imageDataUrl, portionSize },
       });
 
       if (error) {
@@ -525,6 +544,8 @@ const Index = () => {
               <SettingsView
                 insulinRatio={insulinRatio}
                 onRatioChange={handleInsulinRatioChange}
+                portionSize={portionSize}
+                onPortionSizeChange={handlePortionSizeChange}
                 comments={comments}
                 onCommentsChange={handleCommentsChange}
               />

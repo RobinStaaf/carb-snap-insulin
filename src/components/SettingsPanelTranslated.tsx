@@ -4,17 +4,20 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useLanguage } from "@/contexts/LanguageContext";
 
 interface SettingsPanelProps {
   insulinRatio: number;
   onRatioChange: (ratio: number) => void;
+  portionSize: string;
+  onPortionSizeChange: (size: string) => void;
   comments: string;
   onCommentsChange: (comments: string) => void;
   onShowDisclaimer?: () => void;
 }
 
-const SettingsPanel = ({ insulinRatio, onRatioChange, comments, onCommentsChange, onShowDisclaimer }: SettingsPanelProps) => {
+const SettingsPanel = ({ insulinRatio, onRatioChange, portionSize, onPortionSizeChange, comments, onCommentsChange, onShowDisclaimer }: SettingsPanelProps) => {
   const { t } = useLanguage();
 
   return (
@@ -43,6 +46,25 @@ const SettingsPanel = ({ insulinRatio, onRatioChange, comments, onCommentsChange
           </div>
           <p className="text-sm text-muted-foreground">
             {t("settings.insulinRatioDesc", { ratio: insulinRatio })}
+          </p>
+        </div>
+
+        <div className="space-y-2">
+          <Label className="text-base">
+            {t("settings.portionSize")}
+          </Label>
+          <RadioGroup value={portionSize} onValueChange={onPortionSizeChange}>
+            <div className="flex items-center space-x-2">
+              <RadioGroupItem value="child" id="child" />
+              <Label htmlFor="child" className="cursor-pointer">{t("settings.childPortion")}</Label>
+            </div>
+            <div className="flex items-center space-x-2">
+              <RadioGroupItem value="adult" id="adult" />
+              <Label htmlFor="adult" className="cursor-pointer">{t("settings.adultPortion")}</Label>
+            </div>
+          </RadioGroup>
+          <p className="text-sm text-muted-foreground">
+            {t("settings.portionSizeDesc")}
           </p>
         </div>
 

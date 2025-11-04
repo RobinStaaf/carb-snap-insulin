@@ -13,13 +13,22 @@ import bcrypt from "bcryptjs";
 interface SettingsViewProps {
   insulinRatio: number;
   onRatioChange: (ratio: number) => void;
+  portionSize: string;
+  onPortionSizeChange: (size: string) => void;
   comments: string;
   onCommentsChange: (comments: string) => void;
 }
 
 const PIN_STORAGE_KEY = "carbsmart_parental_pin";
 
-const SettingsView = ({ insulinRatio, onRatioChange, comments, onCommentsChange }: SettingsViewProps) => {
+const SettingsView = ({ 
+  insulinRatio, 
+  onRatioChange, 
+  portionSize,
+  onPortionSizeChange,
+  comments, 
+  onCommentsChange 
+}: SettingsViewProps) => {
   const [isUnlocked, setIsUnlocked] = useState(false);
   const [hasPin, setHasPin] = useState(false);
   const [pin, setPin] = useState("");
@@ -256,6 +265,8 @@ const SettingsView = ({ insulinRatio, onRatioChange, comments, onCommentsChange 
       <SettingsPanel
         insulinRatio={insulinRatio}
         onRatioChange={onRatioChange}
+        portionSize={portionSize}
+        onPortionSizeChange={onPortionSizeChange}
         comments={comments}
         onCommentsChange={onCommentsChange}
         onShowDisclaimer={() => setShowDisclaimer(true)}
