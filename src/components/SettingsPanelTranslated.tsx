@@ -12,12 +12,14 @@ interface SettingsPanelProps {
   onRatioChange: (ratio: number) => void;
   portionSize: string;
   onPortionSizeChange: (size: string) => void;
+  carbAdjustment: number;
+  onCarbAdjustmentChange: (adjustment: number) => void;
   comments: string;
   onCommentsChange: (comments: string) => void;
   onShowDisclaimer?: () => void;
 }
 
-const SettingsPanel = ({ insulinRatio, onRatioChange, portionSize, onPortionSizeChange, comments, onCommentsChange, onShowDisclaimer }: SettingsPanelProps) => {
+const SettingsPanel = ({ insulinRatio, onRatioChange, portionSize, onPortionSizeChange, carbAdjustment, onCarbAdjustmentChange, comments, onCommentsChange, onShowDisclaimer }: SettingsPanelProps) => {
   const { t } = useLanguage();
 
   return (
@@ -65,6 +67,27 @@ const SettingsPanel = ({ insulinRatio, onRatioChange, portionSize, onPortionSize
           </RadioGroup>
           <p className="text-sm text-muted-foreground">
             {t("settings.portionSizeDesc")}
+          </p>
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="carb-adjustment" className="text-base">
+            {t("settings.carbAdjustment")}
+          </Label>
+          <div className="flex items-center gap-3">
+            <Input
+              id="carb-adjustment"
+              type="number"
+              min="-50"
+              max="50"
+              value={carbAdjustment}
+              onChange={(e) => onCarbAdjustmentChange(Number(e.target.value))}
+              className="text-xl font-semibold h-12 text-center"
+            />
+            <span className="text-xl font-semibold text-foreground">%</span>
+          </div>
+          <p className="text-sm text-muted-foreground">
+            {t("settings.carbAdjustmentDesc")}
           </p>
         </div>
 

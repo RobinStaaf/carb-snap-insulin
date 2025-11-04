@@ -15,6 +15,8 @@ interface SettingsViewProps {
   onRatioChange: (ratio: number) => void;
   portionSize: string;
   onPortionSizeChange: (size: string) => void;
+  carbAdjustment: number;
+  onCarbAdjustmentChange: (adjustment: number) => void;
   comments: string;
   onCommentsChange: (comments: string) => void;
 }
@@ -26,6 +28,8 @@ const SettingsView = ({
   onRatioChange, 
   portionSize,
   onPortionSizeChange,
+  carbAdjustment,
+  onCarbAdjustmentChange,
   comments, 
   onCommentsChange 
 }: SettingsViewProps) => {
@@ -267,6 +271,8 @@ const SettingsView = ({
         onRatioChange={onRatioChange}
         portionSize={portionSize}
         onPortionSizeChange={onPortionSizeChange}
+        carbAdjustment={carbAdjustment}
+        onCarbAdjustmentChange={onCarbAdjustmentChange}
         comments={comments}
         onCommentsChange={onCommentsChange}
         onShowDisclaimer={() => setShowDisclaimer(true)}

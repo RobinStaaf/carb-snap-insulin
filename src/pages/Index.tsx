@@ -53,6 +53,7 @@ const Index = () => {
   const [history, setHistory] = useState<CalculationResult[]>([]);
   const [insulinRatio, setInsulinRatio] = useState(10);
   const [portionSize, setPortionSize] = useState<string>("adult");
+  const [carbAdjustment, setCarbAdjustment] = useState(0);
   const [comments, setComments] = useState("");
   const [isAdmin, setIsAdmin] = useState(false);
   const [showLogoutDialog, setShowLogoutDialog] = useState(false);
@@ -104,21 +105,22 @@ const Index = () => {
       // Load user profile settings
       const loadProfile = async () => {
         try {
-          const { data, error } = await supabase
-            .from("profiles")
-            .select("insulin_ratio, portion_size, comments, show_start_page")
-            .eq("id", user.id)
-            .single();
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("insulin_ratio, portion_size, carb_adjustment_percentage, comments, show_start_page")
+        .eq("id", user.id)
+        .single();
 
-          if (error) throw error;
+      if (error) throw error;
 
-          if (data) {
-            setInsulinRatio(Number(data.insulin_ratio) || 10);
-            setPortionSize(data.portion_size || "adult");
-            setComments(data.comments || "");
-            setShowStartPage(data.show_start_page);
-            setProfileLoaded(true);
-          }
+      if (data) {
+        setInsulinRatio(Number(data.insulin_ratio) || 10);
+        setPortionSize(data.portion_size || "adult");
+        setCarbAdjustment(Number(data.carb_adjustment_percentage) || 0);
+        setComments(data.comments || "");
+        setShowStartPage(data.show_start_page);
+        setProfileLoaded(true);
+      }
         } catch (error) {
           console.error("Error loading profile:", error);
           setProfileLoaded(true);
@@ -254,6 +256,23 @@ const Index = () => {
     }
   };
 
+  const handleCarbAdjustmentChange = async (adjustment: number) => {
+    setCarbAdjustment(adjustment);
+    try {
+      await supabase
+        .from("profiles")
+        .update({ carb_adjustment_percentage: adjustment })
+        .eq("id", user!.id);
+    } catch (error) {
+      console.error("Error saving carb adjustment:", error);
+      toast({
+        title: t("app.error"),
+        description: "Failed to save carb adjustment",
+        variant: "destructive",
+      });
+    }
+  };
+
   if (showStartPage && profileLoaded) {
     return <StartPage onStart={handleStartPageComplete} />;
   }
@@ -282,13 +301,15 @@ const Index = () => {
       }
 
       const { carbsEstimate } = data;
-      const insulinDose = Number((carbsEstimate / insulinRatio).toFixed(1));
+      // Apply carb adjustment percentage
+      const adjustedCarbs = Math.round(carbsEstimate * (1 + carbAdjustment / 100));
+      const insulinDose = Number((adjustedCarbs / insulinRatio).toFixed(1));
       
       const result: CalculationResult = {
         id: Date.now().toString(),
         timestamp: new Date(),
         imageUrl: imageDataUrl,
-        carbsEstimate,
+        carbsEstimate: adjustedCarbs,
         insulinDose,
         insulinRatio,
       };
@@ -546,6 +567,8 @@ const Index = () => {
                 onRatioChange={handleInsulinRatioChange}
                 portionSize={portionSize}
                 onPortionSizeChange={handlePortionSizeChange}
+                carbAdjustment={carbAdjustment}
+                onCarbAdjustmentChange={handleCarbAdjustmentChange}
                 comments={comments}
                 onCommentsChange={handleCommentsChange}
               />

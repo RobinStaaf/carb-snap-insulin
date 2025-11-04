@@ -100,6 +100,7 @@ export type Database = {
       }
       profiles: {
         Row: {
+          carb_adjustment_percentage: number
           comments: string
           created_at: string | null
           disclaimer_accepted: boolean
@@ -119,6 +120,7 @@ export type Database = {
           status: Database["public"]["Enums"]["user_status"]
         }
         Insert: {
+          carb_adjustment_percentage?: number
           comments?: string
           created_at?: string | null
           disclaimer_accepted?: boolean
@@ -138,6 +140,7 @@ export type Database = {
           status?: Database["public"]["Enums"]["user_status"]
         }
         Update: {
+          carb_adjustment_percentage?: number
           comments?: string
           created_at?: string | null
           disclaimer_accepted?: boolean
