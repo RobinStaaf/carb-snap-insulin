@@ -74,7 +74,16 @@ const SettingsPanel = ({ insulinRatio, onRatioChange, portionSize, onPortionSize
           <Label htmlFor="carb-adjustment" className="text-base">
             {t("settings.carbAdjustment")}
           </Label>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
+            <Button
+              type="button"
+              variant="outline"
+              size="lg"
+              onClick={() => onCarbAdjustmentChange(Math.max(-50, carbAdjustment - 5))}
+              className="h-12 w-12 text-xl font-bold"
+            >
+              −
+            </Button>
             <Input
               id="carb-adjustment"
               type="number"
@@ -82,9 +91,18 @@ const SettingsPanel = ({ insulinRatio, onRatioChange, portionSize, onPortionSize
               max="50"
               value={carbAdjustment}
               onChange={(e) => onCarbAdjustmentChange(Number(e.target.value))}
-              className="text-xl font-semibold h-12 text-center"
+              className="text-xl font-semibold h-12 text-center flex-1"
             />
             <span className="text-xl font-semibold text-foreground">%</span>
+            <Button
+              type="button"
+              variant="outline"
+              size="lg"
+              onClick={() => onCarbAdjustmentChange(Math.min(50, carbAdjustment + 5))}
+              className="h-12 w-12 text-xl font-bold"
+            >
+              +
+            </Button>
           </div>
           <p className="text-sm text-muted-foreground">
             {t("settings.carbAdjustmentDesc")}
