@@ -1,0 +1,85 @@
+{
+  "version": 1,
+  "sdk_version": "0.24.0",
+  "path": "/functions/v1/mcp",
+  "auth": {
+    "type": "oauth",
+    "issuer": "https://dfgbtsbmgojysixiqnll.supabase.co/auth/v1",
+    "accepted_audiences": [
+      "authenticated"
+    ]
+  },
+  "mcp": {
+    "server": {
+      "name": "carbsmart-mcp",
+      "version": "0.1.0",
+      "title": "CarbSmart"
+    },
+    "tools": [
+      {
+        "name": "list_meal_logs",
+        "title": "List meal logs",
+        "description": "List the signed-in user's recent meal logs (carbs, insulin dose, timestamp).",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "limit": {
+              "description": "Max number of logs to return (default 50).",
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 200
+            },
+            "since": {
+              "description": "Optional ISO timestamp; only logs created at or after this time are returned.",
+              "type": "string"
+            }
+          }
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "get_daily_summary",
+        "title": "Get daily carb summary",
+        "description": "Get total carbs and insulin doses for the signed-in user on a given date (YYYY-MM-DD, UTC). Defaults to today.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "date": {
+              "description": "Date in YYYY-MM-DD (UTC). Omit for today.",
+              "type": "string"
+            }
+          }
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "get_profile",
+        "title": "Get my profile",
+        "description": "Get the signed-in user's CarbSmart profile (email, name, insulin ratio, portion size, adjustment %).",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {}
+        },
+        "outputSchema": null
+      }
+    ]
+  }
+}
