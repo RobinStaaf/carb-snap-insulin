@@ -15,6 +15,13 @@ import { Languages } from "lucide-react";
 import carbsmartLogo from "@/assets/carbsmart-logo.png";
 import { toast as sonnerToast } from "sonner";
 
+const getSafeNext = (): string | null => {
+  const params = new URLSearchParams(window.location.search);
+  const next = params.get("next");
+  if (!next || !next.startsWith("/") || next.startsWith("//")) return null;
+  return next;
+};
+
 const Auth = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -81,7 +88,7 @@ const Auth = () => {
         return;
       }
 
-      navigate("/");
+      navigate(getSafeNext() ?? "/");
     } catch (error: any) {
       toast({
         title: t("app.error"),
@@ -123,7 +130,7 @@ const Auth = () => {
         return;
       }
 
-      navigate("/admin");
+      navigate(getSafeNext() ?? "/admin");
     } catch (error: any) {
       toast({
         variant: "destructive",
